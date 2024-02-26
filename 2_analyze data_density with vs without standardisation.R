@@ -35,13 +35,13 @@ rsquared.glmm=function(modlist) {
     } } ) ) }
 
 # dir to save output files
-dir_output <- "./WP1/output"
+dir_output <- "./output"
 
 # 2. LOAD DATA ------------------------------------------------------------
 
 ## Otolith data ---------------------------------------------------
 
-dir_otl <- "./WP1/data"
+dir_otl <- "./data"
 otl <- read_rds(file.path(dir_otl, "otl_full.rds"))
 
 ## check 0 increment
@@ -59,7 +59,7 @@ data_sum_10 <- otl %>%
   mutate(pop.year = paste0(IcesAreaGroup, ":", GrowingYear))
 
 ## create ssb index by dividing ssb by ices area
-dir_gis <- "./WP1/data/admin"
+dir_gis <- "./data/admin"
 ices_4bc <- as.data.frame(st_read(file.path(dir_gis, "ices_areas_sub_group_4326_new.gpkg")))
 ices_4bc <- ices_4bc %>% 
   filter(Area_27 %in% c("4bc", "7a", "8ab")) %>% 
@@ -107,7 +107,7 @@ data_otl <- data_otl %>% filter(pop.year %in% data_sum_10$pop.year)
 
 ## Temperature data ----
 ## load and process data
-dir_temp <- "./WP1/data/temp"
+dir_temp <- "./data/temp"
 
 # isimip
 isimip <- read_rds(file.path(dir_temp, "isimip_sbt_datras_hist_ssp585.rds")) %>%
@@ -153,7 +153,7 @@ data_temp <- data_temp %>%
 ## Fishing data ----
 # Fishing mortality, Spawning Stock Biomass, Recruitment from ICES Stock Assessment
 
-dir_ices <- "./WP1/data/ices"
+dir_ices <- "./data/ices"
 
 # sole distribution area - survey datras
 datras <- read_sf(file.path(dir_ices, "hl_loc_4abc7a8ab.gpkg"))
@@ -180,7 +180,7 @@ data_ple <- read_rds(file.path(dir_ices, "ple_stock-assessment_2023.rds")) %>%
          recruitment_ple.i = recruitment_ple/area_km2)
 
 ## Nutrient data ----
-dir_nu <- "./WP1/data/nutrient"
+dir_nu <- "./data/nutrient"
 data_nu <- read_rds(file.path(dir_nu, "ospar_subset_1978-2017_ices_4abc.rds"))
 # summarize all river by year 
 data_nu <- data_nu %>% 

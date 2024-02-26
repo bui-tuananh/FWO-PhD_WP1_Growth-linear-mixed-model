@@ -39,7 +39,7 @@ c. <- function(x) {x - mean(x)} #function to standardize/scale
 ```{r}
 # 2. LOAD DATA ------------------------------------------------------------
 
-dir_otl <- "D:/OneDrive - UGent/data/WP1/otolith"
+dir_otl <- "./data"
 otl <- read_rds(file.path(dir_otl, "otl_full.rds"))
 
 # dir to save model file

@@ -15,7 +15,7 @@ library(patchwork)
 c. <- function (x) {(x - mean(x))} 
 
 # WORKING DIRECTORY
-dir_report <- "./WP1/report" # not indicate dir_report 
+dir_report <- "./report" # not indicate dir_report 
 
 # POPULATION NAME
 # create df_pop
@@ -31,7 +31,7 @@ theme_update(panel.border = element_rect(colour = "black", fill=NA))
 # 2. LOAD DATA ------------
 ## 2.1. Otolith data ---------------------------------------------------
 
-dir_otl <- "./WP1/data"
+dir_otl <- "./data"
 otl <- read_rds(file.path(dir_otl, "otl_full.rds"))
 
 ## check 0 increment
@@ -49,7 +49,7 @@ data_sum_10 <- otl %>%
   mutate(pop.year = paste0(IcesAreaGroup, ":", GrowingYear))
 
 ## create ssb index by dividing ssb by ices area
-dir_gis <- "./WP1/data/admin"
+dir_gis <- "./data/admin"
 ices_4bc <- as.data.frame(st_read(file.path(dir_gis, "ices_areas_sub_group_4326_new.gpkg")))
 ices_4bc <- ices_4bc %>% 
   filter(Area_27 %in% c("4bc", "7a", "8ab")) %>% 
@@ -97,7 +97,7 @@ data_otl <- data_otl %>% filter(pop.year %in% data_sum_10$pop.year)
 
 ## 2.2. Temperature data ----
 ## load and process data
-dir_temp <- "./WP1/data/temp"
+dir_temp <- "./data/temp"
 
 # isimip
 isimip <- read_rds(file.path(dir_temp, "isimip_sbt_datras_hist_ssp585.rds")) %>%
@@ -143,7 +143,7 @@ data_temp <- data_temp %>%
 ## 2.3. Fishing data ----
 # Fishing mortality, Spawning Stock Biomass, Recruitment from ICES Stock Assessment
 
-dir_ices <- "./WP1/data/ices"
+dir_ices <- "./data/ices"
 
 # sole distribution area - survey datras
 datras <- read_sf(file.path(dir_ices, "hl_loc_4abc7a8ab.gpkg"))
@@ -170,7 +170,7 @@ data_ple <- read_rds(file.path(dir_ices, "ple_stock-assessment_2023.rds")) %>%
          recruitment_ple.i = recruitment_ple/area_km2)
 
 ## 2.4. Nutrient data ----
-dir_nu <- "./WP1/data/nutrient"
+dir_nu <- "./data/nutrient"
 data_nu <- read_rds(file.path(dir_nu, "ospar_subset_1978-2017_ices_4abc.rds"))
 # summarize all river by year 
 data_nu <- data_nu %>% 
@@ -183,7 +183,7 @@ data_nu <- data_nu %>%
 
 ## 2.2. GIS data -----------
 
-dir_gis <- "./WP1/data/admin"
+dir_gis <- "./data/admin"
 
 # continents
 continents <- read_sf(file.path(dir_gis, "esri_continent.gpkg"))
@@ -201,11 +201,11 @@ ices_area <- ices_area %>%
   st_simplify(dTolerance = 2000)
 
 # distribution area - datras
-dir_ices <- "./WP1/data/ices"
+dir_ices <- "./data/ices"
 ices_datras <- read_sf(file.path(dir_ices, "hl_loc_4abc7a8ab.gpkg"))
 
 # sbt - oras5 (1958-2019) 
-dir_temp <- "./WP1/data/temp"
+dir_temp <- "./data/temp"
 oras5 <- read_stars(file.path(dir_temp, 
                                "oras5.tif")) 
 oras5_df <- oras5 %>% 

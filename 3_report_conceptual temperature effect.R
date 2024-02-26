@@ -279,7 +279,7 @@ plot_list <- list("p_temp" = p_temp,
                   "p_growth_ind.ave" = p_growth_ind.ave,
                   "p_growth_ind.ano" = p_growth_ind.ano)
 
-dir_report <- "./WP1/report"
+dir_report <- "./report"
 for (i in 1:length(plot_list)) {
   ggsave(plot_list[[i]], file = file.path(dir_report, "fig3_conceptual temperature effect", paste0(names(plot_list[i]),".tiff") ),
          width = 3.5, height = 3.5,

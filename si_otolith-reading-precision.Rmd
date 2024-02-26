@@ -22,7 +22,7 @@ library(tidyverse)    # process data
 library(FSA)          # precision calculation
 
 # WORKING DIRECTORY
-dir_otl <- "D:/OneDrive - UGent/data/WP1/otolith"
+dir_otl <- "./data"
 
 # NOTE
 # reference: https://derekogle.com/fishR/examples/oldFishRVignettes/AgeComparisons.pdf
