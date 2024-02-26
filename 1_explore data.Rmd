@@ -1,0 +1,518 @@
+---
+title: "WP1_data-exploration"
+output: html_notebook
+date: "2023-04-04"
+---
+
+# 1. SETUP
+
+```{r setup}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+# 1. SETUP
+# PACKAGES
+library(tidyverse)  # process data frame
+library(readr)      # process rds, csv 
+library(lubridate)  # process time
+library(readxl)     # read xlsx
+
+library(lme4)       # fit model
+library(AICcmodavg) # calculate AIC
+library(effects)    # display effect
+#library(lattice)    # visualize data
+library(MuMIn)      # compare models
+library(INLA)       # INLA model
+library(sf)
+
+library(RColorBrewer) # visualize data
+
+# FUNCTION
+###centring function
+c. <- function(x) {x - mean(x)} #function to standardize/scale 
+
+# rsquared function
+```
+
+# 2. LOAD DATA
+
+## Otolith data
+
+```{r}
+# 2. LOAD DATA ------------------------------------------------------------
+
+dir_otl <- "D:/OneDrive - UGent/data/WP1/otolith"
+otl <- read_rds(file.path(dir_otl, "otl_full.rds"))
+
+# dir to save model file
+dir_note <- "./note"
+
+# gis to caclulate area
+dir_gis <- "./data/admin"
+ices_4bc <- as.data.frame(st_read(file.path(dir_gis, "ices_areas_sub_group_4326_new.gpkg")))
+ices_4bc <- ices_4bc %>% 
+  filter(Area_27 %in% c("4bc", "7a", "8ab")) %>% 
+  rename(IcesAreaGroup.area.km2 = Area_km2,
+         IcesAreaGroup = Area_27) %>%
+  select(IcesAreaGroup, IcesAreaGroup.area.km2) 
+
+```
+
+```{r}
+#data for exploration
+# 0 increment, add a small value 0.05 to avoid log issue (smallest increment from ILVO is 0.06)
+incremet_0 <- otl %>% filter(AnnulusDiameterIncrement.um == 0) #
+otl <- otl %>% mutate(AnnulusDiameterIncrement.um = if_else(AnnulusDiameterIncrement.um == 0, 0.05, AnnulusDiameterIncrement.um))
+incremet_small <- otl %>% filter(AnnulusDiameterIncrement.um < 2)
+
+data_otl <- otl %>% 
+  left_join(ices_4bc, by = "IcesAreaGroup") 
+
+data_otl <- data_otl %>% mutate(fishid = FishID,
+                       increment = AnnulusDiameterIncrement.um,
+                       log.increment = log(AnnulusDiameterIncrement.um),
+                       age = Age,
+                       log.age = log(Age),
+                       aac = AgeAtCapture,
+                       log.aac = log(AgeAtCapture), 
+                       method = OtolithProcessingMethod,
+                       datasource = DataSource,
+                       pop = IcesAreaGroup,
+                       pop.area.km2 = IcesAreaGroup.area.km2,
+                       year = GrowingYear,
+                       cohort = Cohort,
+                       fyear = factor(GrowingYear),
+                       fcohort = factor(Cohort),
+                       pop.year = paste0(pop, ":", year),
+                       pop.cohort = paste0(pop, ":", cohort)
+                       # predictors
+                       #f = FishingMortality,
+                       #ssb.i = SpawningStockBiomass.1000t*1000/IcesAreaGroup.area.km2, #unit: ton/km2
+                       )
+
+```
+
+## Temperature data
+
+```{r}
+## Temperature data ----
+## load and process data
+dir_temp <- "./data/temp"
+
+# isimip
+isimip <- read_rds(file.path(dir_temp, "isimip_sbt_datras_hist_ssp585.rds")) %>%
+  mutate(date = Date,
+         year = Year, 
+         pop = if_else(IcesArea == "4abc", "4bc", IcesArea),
+         temp = as.numeric(isimip_sbt),
+         source = "isimip") %>%
+  select(date:source) 
+
+# oras5
+oras <- read_rds(file.path(dir_temp, "oras5_datras.rds")) %>%
+  mutate(date = Date,
+         year = Year, 
+         pop = if_else(IcesArea == "4abc", "4bc", IcesArea),
+         temp = oras_sbt,
+         source = "oras5") %>%
+  select(date:source)
+
+# nemo-medusa
+nm <- read_rds(file.path(dir_temp, "nemomedusa_datras.rds")) %>%
+  mutate(date = Date,
+         year = as.numeric(Year), 
+         pop = if_else(IcesArea == "4abc", "4bc", IcesArea),
+         temp = nemomedusa_sbt,
+         source = "nemo-medusa") %>%
+  select(date:source)
+
+## merge all temp data
+# merge and summarize mean(temp) 
+data_temp <- bind_rows(isimip, oras, nm) %>%
+  filter(pop %in% c("4bc", "7a", "8ab"),
+         year >= min(data_otl$year), year <= max(data_otl$year)) %>%
+  group_by(source, pop, year) %>%
+  summarize(temp = mean(temp))
+
+# get centered temp (c.temp) for each pop
+data_temp <- data_temp %>%
+  group_by(source, pop) %>%
+  mutate(c.temp = c.(temp))
+```
+
+## Fishing data
+
+```{r}
+## Fishing data ----
+# Fishing mortality, Spawning Stock Biomass, Recruitment from ICES Stock Assessment
+
+dir_ices <- "./data/ices"
+
+# sole distribution area - survey datras
+datras <- read_sf(file.path(dir_ices, "hl_loc_4abc7a8ab.gpkg"))
+datras <- as_tibble(datras) %>%
+  mutate(pop = if_else(Area_27 == "4abc", "4bc", Area_27)) %>%
+  select(pop, area_km2)
+
+# sole stock assessment
+data_sol <- read_rds(file.path(dir_ices, "stock-assessment_2023.rds")) %>%
+  rename(ssb = SSB,
+         f = `F`) %>%
+  select(pop, year, ssb, f, recruitment) %>%
+  left_join(datras) %>%
+  mutate(ssb.i = ssb/area_km2,
+         recruitment.i = recruitment/area_km2)
+
+# plaice stock assessment
+data_ple <- read_rds(file.path(dir_ices, "ple_stock-assessment_2023.rds")) %>%
+  rename(ssb_ple = SSB,
+         recruitment_ple = recruitment) %>%
+  select(pop, year, ssb_ple, recruitment_ple) %>%
+  left_join(datras) %>%
+  mutate(ssb_ple.i = ssb_ple/area_km2,
+         recruitment_ple.i = recruitment_ple/area_km2)
+
+```
+
+##Nutrient data
+
+```{r}
+## Nutrient data ----
+dir_nu <- "./data/nutrient"
+data_nu <- read_rds(file.path(dir_nu, "ospar_subset_1978-2017_ices_4abc.rds"))
+# summarize all river by year 
+data_nu <- data_nu %>% 
+  group_by(IcesArea, year) %>% 
+  summarize(TN = sum(TN)/1000,
+            TP = sum(TP)/1000) %>%
+  mutate(IcesArea = "4bc") %>%
+  rename(pop = IcesArea)
+# unit: 1000tN/year, 1000tP/year
+```
+
+# 3. EXPLORE DATA
+
+```{r}
+# LOAD SUPPORT FILES AND PACKAGES 
+source("./ref/HighstatLib.r") # support
+```
+
+```{r}
+data <- data_otl
+```
+
+Exploration protocol
+
+\# Exploration following Zuur et al., 2010 protocol - <https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2009.00001.x>
+
+Protocol
+
+1\. Outlier Y and X (Y is response variable and X is predictor) - boxplot, cleveland dotplot
+
+2\. Homogeneity Y - conditional boxplot
+
+3\. Normality
+
+4\. Zero trouble (ratio has this problem?)
+
+5\. Collinearity X - VIR or scatter plots
+
+6\. Relationship Y and X - (multipanel) scatterplots
+
+7\. Interaction - coplots
+
+8\. Independence Y - variogram
+
+## 1. Outlier
+
+```{r}
+otl_ilvo <- otl %>% filter(DataSource == "ILVO")
+otl_wur <- otl %>% filter(DataSource == "WUR")
+
+ggplot() +
+  geom_point(data = otl_ilvo, aes(x = Length.mm, y = AnnulusDiameter.um), alpha = 0.5, color = "grey") + 
+  geom_point(data = otl_wur, aes(x = Length.mm, y = AnnulusDiameter.um), alpha = 0.5, color = "black") + 
+  facet_grid(~ Age)
+```
+
+### ILVO data
+
+```{r}
+# ilvo
+## otoliths with big growth
+### age5 > 5000
+otl_diameter_age5_gte5000 <- otl_ilvo %>% filter(Age == 5, AnnulusDiameter.um >= 5000)
+otl_diameter_age5_gte5000 <- otl_ilvo %>% filter(FishID %in% otl_diameter_age5_gte5000$FishID)
+
+### age3 > 4700
+otl_diameter_age3_gte4700 <- otl_ilvo %>% filter(Age == 3, AnnulusDiameter.um >= 4700)
+otl_diameter_age3_gte4700 <- otl_ilvo %>% filter(FishID %in% otl_diameter_age3_gte4700$FishID)
+
+## otoliths with small growth
+#### age4 < 2100
+otl_diameter_age4_lt2100 <- otl_ilvo %>% filter(Age == 4, AnnulusDiameter.um < 2100)
+otl_diameter_age4_lt2100 <- otl_ilvo %>% filter(FishID %in% otl_diameter_age4_lt2100$FishID)
+
+### age9 < 3300
+otl_diameter_age9_lt3300 <- otl_ilvo %>% filter(Age == 9, AnnulusDiameter.um < 3300)
+otl_diameter_age9_lt3300 <- otl_ilvo %>% filter(FishID %in% otl_diameter_age9_lt3300$FishID)
+
+# list of otl_ilvo to be checked
+otl_ilvo_check <- bind_rows(otl_diameter_age5_gte5000, 
+                            otl_diameter_age3_gte4700, 
+                            otl_diameter_age4_lt2100, 
+                            otl_diameter_age9_lt3300) 
+
+ggplot() +
+  geom_point(data = otl_ilvo, aes(x = Length.mm, y = AnnulusDiameter.um), alpha = 0.5, color = "grey") + 
+  geom_point(data = otl_wur, aes(x = Length.mm, y = AnnulusDiameter.um), alpha = 0.5, color = "black") + 
+  geom_point(data = otl_ilvo_check, aes(x = Length.mm, y = AnnulusDiameter.um), color = "red", alpha = 0.5) + 
+  facet_grid(~ Age)
+```
+
+All suspected outliers were checked and confirmed not measuring errors.
+
+### WUR data
+
+```{r}
+# wur
+## otoliths with big growth
+### 1 otolith with AnnulusDiameter.um > 5200 at age 7
+otl_diameter_age7_gte5200 <- otl_wur %>% filter(Age == 7, AnnulusDiameter.um >= 5200)
+otl_diameter_age7_gte5200 <- otl_wur %>% filter(FishID %in% otl_diameter_age7_gte5200$FishID)
+
+## otoliths with small growth
+### 1 otolith with very small dimater at age 1
+otl_diameter_age1_lt200 <- otl_wur %>% filter(AnnulusDiameter.um < 200)
+otl_diameter_age1_lt200 <- otl_wur %>% filter(FishID %in% otl_diameter_age1_lt200$FishID)
+
+### 1 otolith with AnnulusDiameter.um < 1100 at age 2
+otl_diameter_age2_lt1100 <- otl_wur %>% filter(Age == 2, AnnulusDiameter.um < 1100)
+otl_diameter_age2_lt1100 <- otl_wur %>% filter(FishID %in% otl_diameter_age2_lt1100$FishID)
+
+### 2 otoliths with AnnulusDiameter.um < 600 at age 1  
+otl_diameter_age1_lt600 <- otl_wur %>% filter(Age == 1, AnnulusDiameter.um < 600)
+otl_diameter_age1_lt600 <- otl_wur %>% filter(FishID %in% otl_diameter_age1_lt600$FishID)
+
+
+# list of otl_wur to be checked
+otl_wur_check <- bind_rows(otl_diameter_age1_lt200, 
+                           otl_diameter_age2_lt1100, 
+                           otl_diameter_age1_lt600, 
+                           otl_diameter_age7_gte5200) 
+
+ggplot() +
+  geom_point(data = otl_ilvo, aes(x = Length.mm, y = AnnulusDiameter.um), alpha = 0.5, color = "grey") +
+  geom_point(data = otl_wur, aes(x = Length.mm, y = AnnulusDiameter.um), alpha = 0.5, color = "black") + 
+  #geom_point(data = otl_ilvo_check, aes(x = Length.mm, y = AnnulusDiameter.um), color = "red", alpha = 0.5) + 
+  geom_point(data = otl_wur_check, aes(x = Length.mm, y = AnnulusDiameter.um), color = "blue", alpha = 0.5) +
+  facet_grid(~ Age)
+
+```
+
+WUR: except for 1 otolith with very small increment at age 1 (\< 200nm), other suspected wur otoliths having growth curves within the range of all sample. Therefore, only remove the otolith with very small increment at age 1 (FishID: sol_fab_0575)
+
+### Increment and predictors
+
+```{r}
+# create data id
+data$id <- seq(1,nrow(data),1)
+
+# INCREMENT
+ggplot(data = data, aes(x = increment, y = id)) + geom_point()
+```
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+
+# INCREMENT BY AGE
+ggplot(data = data %>% filter(age == 1), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 2), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 3), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 4), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 5), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 6), aes(x = increment, y = id)) + geom_point()
+#View(data %>% filter(FishID == filter(data, age == 6, increment > 600)$FishID))
+# 1 increment > 600 in age 6 (smartlab number 198980 (7a 2009)) but not a measurement error
+ggplot(data = data %>% filter(age == 7), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 8), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 9), aes(x = increment, y = id)) + geom_point()
+#View(data %>% filter(FishID == filter(data, age == 9, increment > 300)$FishID))
+# 1 increment > 300 in age 9 (smartlab number 183726 (7a 2007)) but not a measurement error
+ggplot(data = data %>% filter(age == 10), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 11), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 12), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 13), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 14), aes(x = increment, y = id)) + geom_point()
+#View(data %>% filter(FishID == filter(data, age == 14, increment > 150)$FishID))
+#View(data %>% filter(FishID == filter(data, age == 14, increment < 1)$FishID))
+# 1 increment > 150 in age 14 (smartlab number 201911210486 (7a 2019)) but not a measurement error
+ggplot(data = data %>% filter(age == 15), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 16), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 17), aes(x = increment, y = id)) + geom_point()
+#View(data %>% filter(FishID == filter(data, age == 17, increment > 100)$FishID))
+# 1 increment > 100 in age 17 (smartlab number 2018042910309 (7a 2018)) but not a measurement error
+ggplot(data = data %>% filter(age == 18), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 19), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 20), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 21), aes(x = increment, y = id)) + geom_point()
+ggplot(data = data %>% filter(age == 22), aes(x = increment, y = id)) + geom_point()
+
+```
+
+There is unlikely outlier in increment and predictors.
+
+## 2. Homogeneity Y
+
+Check for homogeneity in population and year
+
+There is homogeneity in year after account for year random effect (intercept/age slope)
+
+```{r}
+# YEAR
+m <- lmer(log(increment) ~ log.age + log.aac + (1 | fishid) + (1 | pop), data, REML = T)
+m.year <- lmer(log(increment) ~ log.age + log.aac + (1 | fishid) + (1 | pop) + (1 | pop.year), data, REML = T)
+m.year.age <- lmer(log(increment) ~ log.age + log.aac + (1 | fishid) + (1 | pop) + (1 + log.age | pop.year), data, REML = T)
+
+# residual plot
+data$res <- resid(m)
+data$res.year <- resid(m.year)
+data$res.year.age <- resid(m.year.age)
+
+ggplot(data = data, aes(x = fyear, y = res)) + geom_boxplot()
+ggplot(data = data, aes(x = fyear, y = res.year)) + geom_boxplot()
+ggplot(data = data, aes(x = fyear, y = res.year.age)) + geom_boxplot()
+
+# adding random year effect (intercept/intercept + age slope) improve residual homogeneity 
+
+```
+
+## 3. Normality.
+
+Data is normal distribution. The distribution is skewed especially in age \> 9
+
+Residual plot confirms normal distribution
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data = data, aes(x = increment)) + geom_histogram()
+ggplot(data = data %>% filter(age %in% c(1,2,3)), aes(x = increment)) + geom_histogram() + facet_grid(~ age)
+ggplot(data = data %>% filter(age %in% c(4,5,6)), aes(x = increment)) + geom_histogram() + facet_grid(~ age)
+ggplot(data = data %>% filter(age %in% c(7,8,9)), aes(x = increment)) + geom_histogram() + facet_grid(~ age)
+ggplot(data = data %>% filter(age %in% c(10,11,12)), aes(x = increment)) + geom_histogram() + facet_grid(~ age)
+ggplot(data = data %>% filter(age %in% c(13,14,15)), aes(x = increment)) + geom_histogram() + facet_grid(~ age)
+
+# distribution is normal, the distribution is skewed especially in higher ages > 9
+
+# residual plot
+m <- lmer(log(increment) ~ c.(log(age)) + c.(log(aac)) + (1|FishID) + (1 + c.(log(age))|pop.year), data, REML = T)
+
+data$res <- resid(m)
+ggplot(data = data, aes(x = res)) + geom_histogram(bins = 100)
+
+# residual plot confirm normal distribution
+
+```
+
+## 4. Zero trouble
+
+Increment data has no 0 problem
+
+## 5. Collinearity X - VIR or scatter plots
+
+There is no collinearity (corvif \< 3)
+
+### isimip
+
+```{r}
+data <- data_otl %>% 
+  left_join(filter(data_temp, source == "isimip"),
+            by = join_by(pop, year)) %>%
+  filter(is.na(c.temp) == F) %>%
+  left_join(data_sol, by = join_by(pop, year)) %>%
+  left_join(data_nu, by = join_by(pop, year))
+```
+
+```{r echo=FALSE}
+MyVar <- c("log.age", "log.aac", "c.temp", "ssb.i", "recruitment.i", "TN")
+corvif(data[,MyVar]) 
+
+MyVar <- c("log.age", "log.aac", "c.temp", "ssb.i", "recruitment.i", "TP")
+corvif(data[,MyVar]) 
+# no collinearity
+```
+
+### oras5
+
+```{r}
+data <- data_otl %>% 
+  left_join(filter(data_temp, source == "oras5"),
+            by = join_by(pop, year)) %>%
+  filter(is.na(c.temp) == F) %>%
+  left_join(data_sol, by = join_by(pop, year)) %>%
+  left_join(data_nu, by = join_by(pop, year))
+```
+
+```{r echo=FALSE}
+MyVar <- c("log.age", "log.aac", "c.temp", "ssb.i", "recruitment.i", "TN")
+corvif(data[,MyVar]) 
+
+MyVar <- c("log.age", "log.aac", "c.temp", "ssb.i", "recruitment.i", "TP")
+corvif(data[,MyVar]) 
+# no collinearity
+```
+
+### nemo-medusa
+
+```{r}
+data <- data_otl %>% 
+  left_join(filter(data_temp, source == "nemo-medusa"),
+            by = join_by(pop, year)) %>%
+  filter(is.na(c.temp) == F) %>%
+  left_join(data_sol, by = join_by(pop, year)) %>%
+  left_join(data_nu, by = join_by(pop, year))
+```
+
+```{r echo=FALSE}
+MyVar <- c("log.age", "log.aac", "c.temp", "ssb.i", "recruitment.i", "TN")
+corvif(data[,MyVar]) 
+
+MyVar <- c("log.age", "log.aac", "c.temp", "ssb.i", "recruitment.i", "TP")
+corvif(data[,MyVar]) 
+# no collinearity
+```
+
+## 6. Relationship Y and X - (multipanel) scatterplots
+
+expect linear relationship
+
+## 7. Interaction
+
+expect interaction of log.age\*c.temp, c.temp\*ssb.i/recruitment.i/f
+
+## 8. Independence Y
+
+Potential dependence: temporal over years
+
+ACF (autocorrelation function) of raw data and model without year (log(increment) \~ log(age)) shows autocorrelation.
+
+ACF with year iid and ar1 reduces the lag1 correlation (0.4 to 0.2) but did not resolve the autocorrelation.
+
+No clear difference between iid and ar1 model.
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+# raw acf - strong autocorrelation
+# acf(log(data$increment), main = "ACF")
+
+# residual plot
+m <- lmer(log(increment) ~ log.age + log.aac + (1 | fishid) + (1 | pop), data, REML = T)
+m.year <- lmer(log(increment) ~ log.age + log.aac + (1 | fishid) + (1 | pop) + (1 | pop.year), data, REML = T)
+m.year.age <- lmer(log(increment) ~ log.age + log.aac + (1 | fishid) + (1 | pop) + (1 + log.age | pop.year), data, REML = T)
+
+data$res <- resid(m)
+data$res.year <- resid(m.year)
+data$res.year.age <- resid(m.year.age)
+
+# plot acf
+acf(log(data$increment), main = "raw data")
+acf(data$res, main = "model no year")
+acf(data$res.year, main = "iid (1|year)")
+```
+
+## 

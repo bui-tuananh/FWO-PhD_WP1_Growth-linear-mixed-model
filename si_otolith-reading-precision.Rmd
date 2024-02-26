@@ -1,0 +1,123 @@
+---
+title: "si_otolith reading precision"
+output: html_document
+date: "2023-07-13"
+bibliography: _si_references.bib
+csl: _ices-journal-of-marine-science.csl
+---
+
+**BEFORE:**
+
+-   fwo_phd_git/Data/Env/isimip_thetao_process.R
+
+-   fwo_phd_git/Data/otolith/2_prepare data for analysis.R
+
+**AFTER:**
+
+# SETUP
+
+```{r message=FALSE, warning=FALSE}
+# PACKAGES
+library(tidyverse)    # process data
+library(FSA)          # precision calculation
+
+# WORKING DIRECTORY
+dir_otl <- "D:/OneDrive - UGent/data/WP1/otolith"
+
+# NOTE
+# reference: https://derekogle.com/fishR/examples/oldFishRVignettes/AgeComparisons.pdf
+```
+
+# AGING PRECISION - ALL SAMPLES
+
+This sections calculate the aging precision of the sampled otoliths between less experienced readers Tuan Anh Bui (tbui/TAB), Kelly Diaz (kdiaz/KD) and a experienced reader from ILVO Ilse Maertens (imaertens).
+
+```{r}
+# setup
+otl_reage <- read_rds(file.path(dir_otl, "otl_ilvo_reage.rds"))
+otl_ilvo <- read_rds(file.path(dir_otl, "otl_ilvo.rds")) #data used for analysis
+otl_ilvo <- otl_ilvo %>% filter(FishID != "SOL_52_G1_Z.121_26-03-1990_1602")
+
+otl <- otl_reage %>% 
+  filter(FishID %in% otl_ilvo$FishID) %>%
+  filter(FishID != "SOL_52_G1_Z.121_26-03-1990_1602") %>%
+  select(FishID, Reader, AgeAtCapture) %>% 
+  unique() %>%
+  pivot_wider(names_from = Reader, values_from = AgeAtCapture)
+
+# percentage re-aged
+n_read <- sum(!is.na(otl$imaertens))/n_distinct(otl$FishID)*100 #99.5% otoliths re-age
+```
+
+```{r}
+# tbui vs imaertens
+otl_tbui <- otl %>% 
+  select(-kdiaz) %>%
+  filter(!is.na(tbui))
+
+ap_tbui <- agePrecision(~ tbui + imaertens, data = otl_tbui)
+#summary(ap_tbui, what="absolute difference")
+summary(ap_tbui, what="precision")
+```
+
+```{r}
+# kdiaz vs imaertens
+otl_kdiaz <- otl %>% 
+  select(-tbui) %>%
+  filter(!is.na(kdiaz))
+
+ap_kdiaz <- agePrecision(~ kdiaz + imaertens, data = otl_kdiaz)
+#summary(ap_kdiaz,what="absolute difference")
+summary(ap_kdiaz, what="precision")
+```
+
+`r round(n_read,1)`% of all sampled otoliths was re-aged. 
+
+Coefficient of variation between tbui and imaertens is `r round(summary(ap_tbui, what="precision")$ACV,1)`%.
+
+Coefficient of variation between kdiaz and imaertens is `r round(summary(ap_kdiaz, what="precision")$ACV,1)`%.
+
+The aging is considered precised as the coefficient of variations are under 5% [@Campana2001]
+
+# AGING AND MEASURING PRECISION - BAY OF BISCAY
+
+```{r}
+# setup
+otl_8ab <- read_rds(file.path(dir_otl, "otl_ilvo_consistency.rds"))
+otl_8ab <- otl_8ab %>% filter(FishID != "SOL_52_G1_Z.121_26-03-1990_1602")
+
+# percentage re-aged
+n_read_8ab <- n_distinct(otl_8ab$FishID)/n_distinct(filter(otl_ilvo, Reader == "kdiaz")$FishID)*100 #16.4%% otoliths re-age
+```
+
+```{r}
+# aging precision
+otl_age <- otl_8ab %>% 
+  select(FishID, Reader, AgeAtCapture) %>%
+  unique() %>%
+  pivot_wider(names_from = Reader, values_from = AgeAtCapture) 
+
+ap_age <- agePrecision(~ tbui + kdiaz, data = otl_age)
+summary(ap_age, what="precision")
+```
+
+```{r}
+# measuring precision
+otl_width <- otl_8ab %>% 
+  select(FishID, Reader, Age, AnnulusDiameter.um) %>%
+  pivot_wider(names_from = Reader, values_from = AnnulusDiameter.um) 
+
+ap_width <- agePrecision(~ tbui + kdiaz, data = otl_width)
+summary(ap_width, what="precision")
+```
+
+
+`r round(n_read_8ab,1)`% of Bay of Biscay otoliths was re-aged and re-measured. 
+
+Coefficient of variation of aging precision is `r round(summary(ap_age, what="precision")$ACV,1)`%.
+
+Coefficient of variation of measuring precision is `r round(summary(ap_width, what="precision")$ACV,1)`%.
+
+The aging and measuring are considered precised as the coefficient of variations are under 5% [@Campana2001]
+
+# REFERENCES

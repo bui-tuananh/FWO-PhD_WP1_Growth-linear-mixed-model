@@ -1,0 +1,2456 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+BEFORE
+
+-   2_analyze data.R
+
+AFTER
+
+-   WP1/report
+
+# 1. SETUP
+
+```{r message=FALSE, warning=FALSE}
+# PACKAGES
+library(tidyverse)  # process data frame
+library(lme4)       # fit model
+library(AICcmodavg) # calculate AIC
+library(effects)    # display effect
+library(MuMIn)      # compare models
+library(sf)         # process geospatial data
+library(reactable)  # interactive table
+library(RColorBrewer)# color for visualization
+library(broom.mixed)# summarize model results
+library(writexl)    # write excel
+library(patchwork)  # arrange plot
+library(sjPlot)     # summarize table
+library(knitr)      # print sjPlot table
+library(magrittr)   # print sjPlot table
+#library(arm)       # to calculate se - do not load to not override select function
+
+# DEFAULT THEME
+theme_set(theme_classic()) 
+theme_update(panel.border = element_rect(colour = "black", fill=NA))
+
+# FUNCTION
+#centring function
+c. <- function (x) {(x - mean(x))} 
+# scale function
+s. <- function (x) {(x - mean(x))/sd(x)} 
+
+# rsquared function
+rsquared.glmm=function(modlist) {
+  do.call(rbind,lapply(modlist,function(i) {
+    if(inherits(i,"merMod") | class(i)=="merLmerTest") {
+      VarF=var(as.vector(fixef(i) %*% t(i@pp$X))) 
+      VarRand=colSums(do.call(rbind,lapply(VarCorr(i),function(j) j[1])))
+      VarResid=attr(VarCorr(i),"sc")^2
+      Rm=VarF/(VarF+VarRand+VarResid)
+      Rc=(VarF+VarRand)/(VarF+VarRand+VarResid)
+      Rsquared.mat=data.frame(Class=class(i),Marginal=Rm,Conditional=Rc,
+                              AIC=AIC(update(i,REML=F))) } 
+    else { print("Function requires models of class lm, lme, mer, or    merMod") 
+    } } ) ) }
+
+# WORKING DIRECTORY 
+dir_output <- "./output"
+dir_report <- "./report"
+
+# POPULATION NAME
+# create df_pop
+df_pop <- tibble(IcesAreaGroup = c("4bc", "7a", "8ab"),
+                 pop = c("4bc", "7a", "8ab"),
+                 pop.name = factor(c("North Sea", "Irish Sea", "Bay of Biscay"),
+                                   levels = c("North Sea", "Irish Sea", "Bay of Biscay")))
+
+# color palette 
+pal <- (brewer.pal(8, "Spectral")) 
+```
+
+# 2. LOAD DATA
+
+## 2.1. Otolith data
+
+```{r message=FALSE, warning=FALSE}
+dir_otl <- "./data"
+otl <- read_rds(file.path(dir_otl, "otl_full.rds"))
+
+## check 0 increment
+incremet_0 <- otl %>% filter(AnnulusDiameterIncrement.um == 0) 
+
+## check number of increment/year
+data_sum <- otl %>% 
+  group_by(GrowingYear, IcesAreaGroup) %>% 
+  summarize(n_increment = n())
+# >= 10 increment/year for each population
+data_sum_10 <- otl %>% 
+  group_by(GrowingYear, IcesAreaGroup) %>% 
+  summarize(n_increment = n()) %>%
+  filter(n_increment >= 10) %>%
+  mutate(pop.year = paste0(IcesAreaGroup, ":", GrowingYear))
+
+## create ssb index by dividing ssb by ices area
+dir_gis <- "./data/admin"
+ices_4bc <- as.data.frame(st_read(file.path(dir_gis, "ices_areas_sub_group_4326_new.gpkg"),
+                                   quiet = TRUE))
+ices_4bc <- ices_4bc %>% 
+  filter(Area_27 %in% c("4bc", "7a", "8ab")) %>% 
+  rename(IcesAreaGroup.area.km2 = Area_km2,
+         IcesAreaGroup = Area_27) %>%
+  select(IcesAreaGroup, IcesAreaGroup.area.km2) 
+
+## process otl data 
+# 1. remove 1 fish 8ab cohort < 1985
+# 2. remove 1 wur fish with very small age 1 increment (< 200nm)
+# 3. 0 increment, add a small value 0.05 to avoid log issue (smallest increment from ILVO is 0.06)
+# 4. add area of ices area
+
+data_otl <- otl %>% 
+  filter(FishID != "SOL_52_G1_Z.121_26-03-1990_1602") %>%
+  filter(FishID != "sol_fab_0575") %>%
+  mutate(AnnulusDiameterIncrement.um = if_else(AnnulusDiameterIncrement.um == 0, 0.05, AnnulusDiameterIncrement.um)) %>%
+  left_join(ices_4bc, by = "IcesAreaGroup") 
+
+# 5. rename variables to formulate models easier
+data_otl <- data_otl %>% mutate(fishid = FishID,
+                       increment = AnnulusDiameterIncrement.um,
+                       log.increment = log(AnnulusDiameterIncrement.um),
+                       age = Age,
+                       log.age = log(Age),
+                       aac = AgeAtCapture,
+                       log.aac = log(AgeAtCapture), 
+                       method = OtolithProcessingMethod,
+                       datasource = DataSource,
+                       pop = IcesAreaGroup,
+                       pop.area.km2 = IcesAreaGroup.area.km2,
+                       year = GrowingYear,
+                       cohort = Cohort,
+                       fyear = factor(GrowingYear),
+                       fcohort = factor(Cohort),
+                       pop.year = paste0(pop, ":", year),
+                       pop.cohort = paste0(pop, ":", cohort)
+                       # predictors
+                       #f = FishingMortality,
+                       #ssb.i = SpawningStockBiomass.1000t*1000/IcesAreaGroup.area.km2, #unit: ton/km2
+                       )
+
+# 6. keep only years with >= 10 increments/year for each pop  
+data_otl <- data_otl %>% filter(pop.year %in% data_sum_10$pop.year)
+```
+
+## 2.2. Temperature data
+
+```{r message=FALSE, warning=FALSE}
+## load and process data
+dir_temp <- "./data/temp"
+
+# isimip
+isimip <- read_rds(file.path(dir_temp, "isimip_sbt_datras_hist_ssp585.rds")) %>%
+  mutate(date = Date,
+         year = Year, 
+         pop = if_else(IcesArea == "4abc", "4bc", IcesArea),
+         temp = as.numeric(isimip_sbt),
+         source = "isimip") %>%
+  select(date:source) 
+
+# oras5
+oras <- read_rds(file.path(dir_temp, "oras5_datras.rds")) %>%
+  mutate(date = Date,
+         year = Year, 
+         pop = if_else(IcesArea == "4abc", "4bc", IcesArea),
+         temp = oras_sbt,
+         source = "oras5") %>%
+  select(date:source)
+
+# nemo-medusa
+nm <- read_rds(file.path(dir_temp, "nemomedusa_datras.rds")) %>%
+  mutate(date = Date,
+         year = as.numeric(Year), 
+         pop = if_else(IcesArea == "4abc", "4bc", IcesArea),
+         temp = nemomedusa_sbt,
+         source = "nemo-medusa") %>%
+  select(date:source)
+
+## merge all temp data
+# merge and summarize mean(temp) 
+data_temp <- bind_rows(isimip, oras, nm) %>%
+  filter(pop %in% c("4bc", "7a", "8ab"),
+         year >= min(data_otl$year), year <= max(data_otl$year)) %>%
+  group_by(source, pop, year) %>%
+  summarize(temp = mean(temp))
+
+# get centered temp (c.temp) for each pop
+data_temp <- data_temp %>%
+  group_by(source, pop) %>%
+  mutate(c.temp = c.(temp))
+
+# add source name
+df_temp_name <- tibble(source = c("isimip", "oras5", "nemo-medusa"),
+                       source_name = factor(c("ISIMIP", "ORAS5", "NEMO-MEDUSA"), 
+                                            levels = c("ISIMIP", "ORAS5", "NEMO-MEDUSA")))
+data_temp <- data_temp %>% left_join(df_temp_name)
+
+# add pop name
+data_temp <- data_temp %>% left_join(df_pop)
+```
+
+## 2.3. Fishing data
+```{r message=FALSE, warning=FALSE}
+## Fishing data ----
+# Fishing mortality, Spawning Stock Biomass, Recruitment from ICES Stock Assessment
+
+dir_ices <- "./data/ices"
+
+# sole distribution area - survey datras
+datras <- read_sf(file.path(dir_ices, "hl_loc_4abc7a8ab.gpkg"))
+datras <- as_tibble(datras) %>%
+  mutate(pop = if_else(Area_27 == "4abc", "4bc", Area_27)) %>%
+  select(pop, area_km2)
+
+# sole stock assessment
+data_sol <- read_rds(file.path(dir_ices, "stock-assessment_2023.rds")) %>%
+  rename(ssb = SSB,
+         f = `F`) %>%
+  select(pop, year, ssb, f, recruitment) %>%
+  left_join(datras) %>%
+  mutate(ssb.i = ssb/area_km2,
+         recruitment.i = recruitment/area_km2)
+
+data_sol <- data_sol %>% left_join(df_pop)
+
+# plaice stock assessment
+data_ple <- read_rds(file.path(dir_ices, "ple_stock-assessment_2023.rds")) %>%
+  rename(ssb_ple = SSB,
+         recruitment_ple = recruitment) %>%
+  select(pop, year, ssb_ple, recruitment_ple) %>%
+  left_join(datras) %>%
+  mutate(ssb_ple.i = ssb_ple/area_km2,
+         recruitment_ple.i = recruitment_ple/area_km2)
+
+```
+
+
+## 2.4. Nutrient data
+
+```{r message=FALSE, warning=FALSE}
+## Nutrient data ----
+dir_nu <- "./data/nutrient"
+data_nu <- read_rds(file.path(dir_nu, "ospar_subset_1978-2017_ices_4abc.rds"))
+# summarize all river by year 
+data_nu <- data_nu %>% 
+  group_by(IcesArea, year) %>% 
+  summarize(TN = sum(TN)/1000,
+            TP = sum(TP)/1000) %>%
+  mutate(IcesArea = "4bc") %>%
+  rename(pop = IcesArea)
+# unit: 1000tN/year, 1000tP/year
+
+data_nu <- data_nu %>% left_join(df_pop)
+```
+
+
+## 2.5. Model data
+
+```{r}
+#### BEST INTRINSIC STRUCTURE: 
+## no scaled
+m3 <- read_rds(file.path(dir_output, "intrinsic.model_best.rds"))
+## scaled
+m3_s <- read_rds(file.path(dir_output, "intrinsic.model_best_scaled.rds"))
+
+#### BEST EXTRINSIC STRUCTURE: 
+## no scaled
+m4_isimip <- read_rds(file.path(dir_output, "extrinsic.model_best_isimip.rds"))
+m4_oras5 <- read_rds(file.path(dir_output, "extrinsic.model_best_oras5.rds"))
+m4_nm <- read_rds(file.path(dir_output, "extrinsic.model_best_nemo-medusa.rds"))
+  
+## scaled
+m4_isimip_s <- read_rds(file.path(dir_output, "extrinsic.model_best_scaled_isimip.rds"))
+m4_oras5_s <- read_rds(file.path(dir_output, "extrinsic.model_best_scaled_oras5.rds"))
+m4_nm_s <- read_rds(file.path(dir_output, "extrinsic.model_best_scaled_nemo-medusa.rds"))
+
+#### BEST EXTRINSIC STRUCTURE WITH NUTRIENT DATA:
+## no scaled
+m4_nu_isimip <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_isimip.rds"))
+m4_nu_oras5 <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_oras5.rds"))
+m4_nu_nm <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_nemo-medusa.rds"))
+  
+## scaled
+m4_nu_isimip_s <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_scaled_isimip.rds"))
+m4_nu_oras5_s <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_scaled_oras5.rds"))
+m4_nu_nm_s <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_scaled_nemo-medusa.rds"))
+
+#### BEST EXTRINSIC EXTENDED STRUCTURE: 
+## no scaled
+m5_isimip <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_isimip.rds"))
+m5_oras5 <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_oras5.rds"))
+m5_nm <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_nemo-medusa.rds"))
+  
+## scaled
+m5_isimip_s <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_scaled_isimip.rds"))
+m5_oras5_s <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_scaled_oras5.rds"))
+m5_nm_s <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_scaled_nemo-medusa.rds"))
+
+#### BEST EXTRINSIC EXTENDED STRUCTURE WITH NUTRIENT DATA: 
+## no scaled
+m5_nu_isimip <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_isimip.rds"))
+m5_nu_oras5 <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_oras5.rds"))
+m5_nu_nm <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_nemo-medusa.rds"))
+  
+## scaled
+m5_nu_isimip_s <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_scaled_isimip.rds"))
+m5_nu_oras5_s <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_scaled_oras5.rds"))
+m5_nu_nm_s <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_scaled_nemo-medusa.rds"))
+```
+
+# 3. MODELING RESULTS
+
+## 3.1. Table summary
+
+```{r}
+#### setup
+# css style
+css_list = list(
+  css.firsttablerow =  "font-weight:bold; font-style:normal; border:1px solid;",
+  css.depvarhead = "font-style:normal; font-weight:bold; text-align:center; padding-top:.8em; border:1px solid;",
+  css.firsttablecol = "text-align:left; border:1px solid;",
+  css.centeralign = "text-align:center; border:1px solid;",
+  css.randomparts = "font-weight:bold; text-align:left; padding-top:.8em; border:1px solid;",
+  css.summary = "border:1px solid;",
+  css.summarydata = "text-align:left;"
+)
+
+#### ref:
+#https://cran.r-project.org/web/packages/sjPlot/vignettes/tab_mixed.html
+#ref: https://cran.r-project.org/web/packages/sjPlot/vignettes/table_css.html
+```
+
+### intrinsic, extrinsic models 
+#### without nutrient data
+```{r}
+# labels
+pred_labels <- c(
+  "Intercept",
+  "Age",
+  "Age at capture",
+  "Reading Institute (WUR)",
+  "Reading Institute (WUR) * Age",
+  "Spawning Stock Biomass",
+  "Recruitment",
+  "Temperature",
+  "Temperature * Age"
+)
+
+# summary table
+tab <- tab_model(m3, m4_isimip, m4_oras5, m4_nm, show.se = TRUE, 
+          show.ci = NULL, show.p = FALSE,
+          dv.labels = c("Intrinsic", "Extrinsic (ISIMIP)", "Extrinsic (ORAS5)", "Extrinsic (NEMO-MEDUSA)"),
+          pred.labels = pred_labels,
+          string.pred = "Fixed Effects",
+          string.est = "Estimate (SE)",
+          collapse.se = TRUE,
+          show.icc = FALSE,
+          digits.rsq = 2,
+          CSS = css_list#,
+          #file = "./report/model_summary.html"
+          )
+tab
+
+asis_output(tab %$% knitr)
+
+#### note: 
+# tab_model cannot customised the random effect names
+# things to be changed manually after tab_model
+# 1. names random effects
+# 2. number of years (tab_model returns number of pop.year)
+# get no. year instead of no. pop.year
+year_all = as.numeric(sub(".*:", "", m3@frame$pop.year))
+year_nm = as.numeric(sub(".*:", "", m4_nm@frame$pop.year))
+tibble(data = c("full", "nemo-medusa"),
+       n_year = c(length(unique(year_all)), length(unique(year_nm))))
+```
+
+**Model**
+
+Intrinsic model: log(Increment) \~ 1 + log(Age) + log(Age at capture)*+* ReadingInstitute\*log(Age) + (1 \| FishID) + (1 \| Population) + (1 + log(Age) \| Population:Year)
+
+Extrinsic model: tested model fit with additional variables:
+
+-   Temperature, Temperature\*log(Age), Temperature\*FishingMortality, Temperature\*SpawningStockBiomass, Temperature\*Recruitment
+
+-   SpawningStockBiomass
+
+-   Recruitment
+
+-   FishingMortality
+
+Temperature effect
+
+-   There are Temperature and Temperature\*log(Age) effects when doing analysis with oras5 and nemo-medusa; but not with isimip. The effects follow Temperature Size Rule - faster growth at age 1, slower growth at older ages at higher temperature.
+
+SpawningStockBiomass, Recruitment effect
+
+-   There is positive effect of SpawningStockBiomass and Recruitment when doing analysis with isimip and oras5; only positive effect of Recruitment when doing analysis with nemo-medusa
+
+The explained variance increases very little in extrinsic models (R2 Condition 0.85-0.86) compared to intrinsic model (R2 Condition 0.85), meaning that most of the otolith growth variation is explained by Age and other intrinsic variables. This result is similar to previous studies on otolith growth (e.g., [Morrongiello and Thresher 2015](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1890/13-2355.1); [Denechaud et al., 2020 (SI)](https://onlinelibrary.wiley.com/doi/full/10.1111/gcb.15298))
+
+```{r}
+tab <- tab_model(m4_isimip, m4_oras5, m4_nm, show.se = TRUE, 
+                 show.ci = NULL, show.p = FALSE,
+          dv.labels = c("Extrinsic (ISIMIP)", "Extrinsic (ORAS5)", "Extrinsic (NEMO-MEDUSA)"),
+          terms = c("ssb.i", "recruitment.i", "c.temp", "log.age:c.temp"),
+          show.re.var = FALSE,
+          pred.labels = c(
+            "Spawning Stock Biomass",
+            "Recruitment",
+            "Temperature",
+            "Temperature * Age"
+            ),
+          string.pred = "Fixed Effects",
+          string.est = "Estimate (SE)",
+          collapse.se = TRUE,
+          show.icc = FALSE,
+          digits.rsq = 2,
+          CSS = css_list,
+          file = "./report/model_summary_extrinsic.html"
+          ) 
+tab
+
+asis_output(tab %$% knitr)
+```
+
+#### with nutrient data 
+
+```{r}
+# labels
+pred_labels <- c(
+  "Spawning Stock Biomass",
+  "Recruitment",
+  "Total Phosphorus",
+  "Temperature",
+  "Temperature * Age"
+)
+
+# summary table
+tab <- tab_model(m4_nu_isimip, m4_nu_oras5, m4_nu_nm, show.se = TRUE, 
+          terms = c("ssb.i", "recruitment.i", "c.temp", "log.age:c.temp", "TP"),
+          order.terms = c(1,2,3,4,5),
+          show.ci = NULL, show.p = FALSE,
+          show.re.var = FALSE,
+          dv.labels = c("Extrinsic (ISIMIP)", "Extrinsic (ORAS5)", "Extrinsic (NEMO-MEDUSA)"),
+          pred.labels = pred_labels,
+          string.pred = "Fixed Effects",
+          string.est = "Estimate (SE)",
+          collapse.se = TRUE,
+          show.icc = FALSE,
+          digits = 3,
+          digits.rsq = 2,
+          CSS = css_list#,
+          #file = "./report/model_summary_nutrient.html")
+tab
+
+asis_output(tab %$% knitr)
+```
+
+### intrisic, extrinsic extended models
+#### without nutrient data
+```{r}
+pred_labels <- c(
+  "Intercept",
+  "Age",
+  "Age at capture",
+  "Reading Institute (WUR)",
+  "Reading Institute (WUR) * Age",
+  "Spawning Stock Biomass",
+  "Recruitment",
+  "Temperature_within",
+  "Temperature_between",
+  "Temperature_within * Age",
+  "Temperature_between * Age",
+  "Temperature_within * Spawning Stock Biomass",
+  "Fishing mortality",
+  "Temperature_within * Fishing mortality",
+  "Temperature_within * Recruitment"
+)
+
+# summary table
+tab <- tab_model(m3, m5_isimip, m5_oras5, m5_nm, show.se = TRUE, 
+          show.ci = NULL, show.p = FALSE,
+          dv.labels = c("Intrinsic", "Extrinsic extended (ISIMIP)", "Extrinsic extended (ORAS5)", "Extrinsic extended (NEMO-MEDUSA)"),
+          order.terms = c(1,2,3,4,5,6,7,13,8,10,12,15,14,9,11),
+          pred.labels = pred_labels,
+          string.pred = "Fixed Effects",
+          string.est = "Estimate (SE)",
+          collapse.se = TRUE,
+          show.icc = FALSE,
+          digits.rsq = 2,
+          CSS = css_list#,
+          #file = "./report/model_ext_summary.html"
+          )
+tab
+
+asis_output(tab %$% knitr)
+
+#### note: 
+# tab_model cannot customised the random effect names
+# things to be changed manually after tab_model
+# 1. names random effects
+# 2. number of years (tab_model returns number of pop.year)
+# get no. year instead of no. pop.year
+year_all = as.numeric(sub(".*:", "", m3@frame$pop.year))
+year_nm = as.numeric(sub(".*:", "", m5_nm@frame$pop.year))
+tibble(data = c("full", "nemo-medusa"),
+       n_year = c(length(unique(year_all)), length(unique(year_nm))))
+```
+
+#### with nutrient data
+```{r}
+# summary table
+# labels
+pred_labels <- c(
+  "Spawning Stock Biomass",
+  "Recruitment",
+  "Temperature_within",
+  "Temperature_between",
+  "Total Phosphorus",
+  "Temperature_within * Age",
+  "Temperature_between * Age",
+  "Temperature_within * Spawning Stock Biomass",
+  "Fishing mortality",
+  "Temperature_within * Fishing mortality",
+  "Temperature_within * Recruitment"
+)
+
+# summary table
+tab <- tab_model(m5_nu_isimip, m5_nu_oras5, m5_nu_nm, show.se = TRUE, 
+          terms = c("ssb.i", "recruitment.i", "f",
+                    "c.temp_within", "log.age:c.temp_within",
+                    "c.temp_between", "log.age:c.temp_between",
+                    "ssb.i:c.temp_within", "recruitment.i:c.temp_within", "c.temp_within:f", 
+                    "TP"),
+          order.terms = c(1,2,9,5,3,6,8,11,10,4,7),
+          pred.labels = pred_labels,
+          show.ci = NULL, show.p = FALSE,
+          show.re.var = FALSE,
+          dv.labels = c("Extrinsic extended (ISIMIP)", "Extrinsic extended (ORAS5)", "Extrinsic extended (NEMO-MEDUSA)"),
+          string.pred = "Fixed Effects",
+          string.est = "Estimate (SE)",
+          collapse.se = TRUE,
+          show.icc = FALSE,
+          digits = 3,
+          digits.rsq = 2,
+          CSS = css_list#,
+          #file = "./report/model_ext_summary_nutrient.html"
+          )
+tab
+
+asis_output(tab %$% knitr)
+```
+
+## 3.2. Intrinsic and random effects
+
+```{r}
+# setup
+data <- data_otl
+```
+
+### year random effect
+
+```{r}
+#### plot
+ggplot() + 
+  geom_line(data = pred_year, 
+            aes(x = year, 
+                y = intercept)) +
+  geom_ribbon(data = pred_year,
+              aes(x = year,
+                  ymin = intercept - se,
+                  ymax = intercept + se),
+              alpha = 0.5) +
+  geom_hline(yintercept = 0, 
+             linetype="dashed") +
+  facet_grid(pop.name ~ .) +
+  labs(x = "Year",
+       y = "Year random effect") 
+```
+
+#### random intercept + age slope
+
+```{r message=FALSE, warning=FALSE}
+# year random intercept + log.age slope (1 + log.age | pop.year) 
+
+#### data 
+data <- data_otl
+df_age <- unique(select(data, age, log.age)) %>% arrange(age)
+
+pred_year <- ranef(m3)$`pop.year` 
+pred_year_se <- as.data.frame(arm::se.ranef(m3)$`pop.year`)
+
+pred_year <- pred_year %>%
+  mutate(pop = sub(":.*", "", rownames(pred_year)),
+         year = as.numeric(sub(".*:", "", rownames(pred_year))),
+         intercept = `(Intercept)`,
+         intercept_se = pred_year_se$`(Intercept)`,
+         log.age_se =  pred_year_se$log.age) %>%
+  left_join(df_pop)
+
+age1 <- pred_year %>% mutate(ranef = intercept + log.age*df_age$log.age[1],
+                             ranef_upper = intercept + intercept_se + (log.age + log.age_se)*df_age$log.age[1],
+                             ranef_lower = intercept - intercept_se + (log.age - log.age_se)*df_age$log.age[1],
+                             age = "Age 1")
+age5 <- pred_year %>% mutate(ranef = intercept + log.age*df_age$log.age[5],
+                             ranef_upper = intercept + intercept_se + (log.age + log.age_se)*df_age$log.age[5],
+                             ranef_lower = intercept - intercept_se + (log.age - log.age_se)*df_age$log.age[5],
+                             age = "Age 5")
+age_all <- bind_rows(age1, age5)
+
+#### plot
+ggplot() + 
+  geom_line(data = age_all, 
+            aes(x = year, y = ranef)) +
+  geom_ribbon(data = age_all,
+              aes(x = year, 
+                  ymin = ranef_lower,
+                  ymax = ranef_upper),
+              alpha = 0.5) +
+  geom_hline(yintercept = 0, 
+             linetype="dashed") +
+  facet_grid(pop.name ~ age)  +
+  labs(x = "Year",
+       y = "Year random effect")
+```
+```{r}
+#### summary
+# start to ending year
+age_all_sum <- age_all %>% 
+  group_by(pop.name) %>%
+  filter(year %in% c(min(year), max(year))) %>%
+  group_by(pop.name, age) %>%
+  mutate(diff_vs_base = exp(ranef)) %>%
+  mutate(diff_vs_start = (diff_vs_base - diff_vs_base[1])/diff_vs_base[1]*100) %>%
+  select(pop.name, age, year, diff_vs_start) %>%
+  mutate(across(where(is.numeric), round, 1))
+
+reactable(age_all_sum)
+
+# 2000 vs 2018
+age_all_sum_00_18 <- age_all %>% 
+  filter(year %in% c(2000, 2018)) %>%
+  group_by(pop.name, age) %>%
+  mutate(diff_vs_base = exp(ranef)) %>%
+  mutate(diff_vs_2000 = (diff_vs_base - diff_vs_base[1])/diff_vs_base[1]*100) %>%
+  select(pop.name, age, year, diff_vs_2000) %>%
+  mutate(across(where(is.numeric), round, 1))
+
+reactable(age_all_sum_00_18)
+```
+
+#### random intercept + age slope vs survey size-at-age data
+
+```{r message=FALSE, warning=FALSE}
+#### data survey
+#dir_ices <- "./data/ices"
+data_sur <- read_rds(file.path(dir_ices, "Solea_soleaCA_BTS+BTS-VIII+DYFS+SNS_in1985till2021_in3a204a4b4c7a7d7e7f7g7h7j28a8b.RDS"))
+
+data_sur <- data_sur %>% filter(Area_27 %in% c("4.c", "4.b", "7.a", "8.a", "8.b")) %>%
+  mutate(Area_27_merge = if_else(Area_27 %in% c("4.c", "4.b"), "4bc",
+                                 if_else(Area_27 == "7.a", "7a", "8ab"))) %>%
+  mutate(age = Age,
+         len = LngtClass_mm,
+         pop = Area_27_merge,
+         year = Year,
+         month = Month, 
+         sex = Sex,
+         id = 1:length(age)) %>%
+  #select(age:id) %>%
+  filter(age >= 0, #for the moment only consider age >= 1
+         is.na(len) == F,
+         is.na(age) == F)
+```
+
+##### mean increment at age
+
+growth at age 1 is compared with the difference between mean size at age 1 and age 0
+
+growth at age 5 is compared with the difference between mean size at age 4 and age 5
+
+```{r message=FALSE, warning=FALSE}
+data_sur_inc <- tibble()
+c_age <- c(1,5)
+
+for(i in seq_along(c_age)) {
+  
+  df_temp <- data_sur %>% 
+    filter(sex %in% c("M", "F"),
+         age %in% c(c_age[i]-1, c_age[i])) %>%
+    group_by(pop, year, sex, age) %>%
+    summarize(mean_len = mean(len, na.rm = T)) %>%
+    pivot_wider(names_from = age, values_from = mean_len) %>%
+    ungroup() %>%
+    mutate(mean_inc = .[[5]] - .[[4]]) %>%
+    group_by(pop, sex) %>%
+    mutate(mean_inc_std = scale(mean_inc)) %>%
+    mutate(age = paste0("Age ", c_age[i])) %>%
+    select(pop, year, sex, mean_inc, mean_inc_std, age) %>%
+    left_join(df_pop)
+  
+  data_sur_inc = bind_rows(data_sur_inc, df_temp)
+} 
+
+#### plot
+ggplot() + 
+  geom_line(data = age_all, 
+            aes(x = year, y = scale(ranef), color = "otolith growth (female)")) +
+  geom_line(data = data_sur_inc %>% filter(sex == "F"),
+            aes(x = year, y = mean_inc_std, color = "mean increment-at-age (female)")) +
+   geom_line(data = data_sur_inc %>% filter(sex == "M"),
+            aes(x = year, y = mean_inc_std, color = "mean increment-at-age (male)")) +
+  geom_hline(yintercept = 0, 
+             linetype="dashed") +
+  facet_grid(pop.name ~ age) + 
+  scale_color_manual(values=c("otolith growth (female)" = "black", 
+                              "mean increment-at-age (female)" = "#d95f02",
+                              "mean increment-at-age (male)" = "#1b9e77")) +
+  labs(x = "Year",
+       y = "Scaled value",
+       color = NULL) 
+```
+
+##### mean length at age
+
+```{r}
+#### data
+data_sur_len <- data_sur %>% 
+  filter(sex %in% c("M", "F"),
+         age %in% c(1,5)) %>%
+  group_by(pop, year, sex, age) %>%
+  summarize(mean_len = mean(len, na.rm = T)) %>%
+  group_by(pop, sex, age) %>%
+  mutate(mean_len_std = scale(mean_len)) 
+
+data_sur_len <- data_sur_len %>% 
+  filter(age %in% c(1,5)) %>%
+  mutate(age = if_else(age == 1, "Age 1", "Age 5")) %>%
+  left_join(df_pop)
+
+#### plot
+ggplot() + 
+  geom_line(data = age_all, 
+            aes(x = year, y = scale(ranef), color = "otolith growth (female)")) +
+  geom_line(data = data_sur_len %>% filter(sex == "F"),
+            aes(x = year, y = mean_len_std, color = "mean length-at-age (female)")) +
+   geom_line(data = data_sur_len %>% filter(sex == "M"),
+            aes(x = year, y = mean_len_std, color = "mean length-at-age (male)")) +
+  geom_hline(yintercept = 0, 
+             linetype="dashed") +
+  facet_grid(pop.name ~ age) + 
+  scale_color_manual(values=c("otolith growth (female)" = "black", 
+                              "mean length-at-age (female)" = "#d95f02",
+                              "mean length-at-age (male)" = "#1b9e77")) +
+  labs(x = "Year",
+       y = "Scaled value",
+       color = NULL) 
+```
+
+### population random effect
+
+```{r}
+# setup
+pred_pop <- ranef(m3)$pop
+pred_pop_se <- as.data.frame(arm::se.ranef(m3)$pop)
+
+pred_pop <- pred_pop %>%
+  mutate(pop = rownames(pred_pop),
+         intercept = `(Intercept)`,
+         se = pred_pop_se$`(Intercept)`
+  ) %>%
+  left_join(df_pop)
+
+# plot
+ggplot(data = pred_pop) + 
+  geom_point(aes(x = pop.name, 
+                y = intercept)) +
+  geom_errorbar(aes(x = pop.name,
+                  ymin = intercept + se,
+                  ymax = intercept - se, 
+              width = 0.1)) +
+  labs(x = "Population",
+       y = "Population random effect")
+
+# summary
+pred_pop_sum <- pred_pop %>% 
+  mutate(intercept = round(intercept, 4)) %>%
+  mutate(diff_vs_base = exp(intercept)) %>%
+  mutate(diff_vs_4bc = (diff_vs_base - diff_vs_base[1])/diff_vs_base[1]*100) %>%
+  mutate(diff_vs_4bc = round(diff_vs_4bc, 1)) 
+
+reactable(pred_pop_sum %>% select(pop.name:diff_vs_4bc))
+```
+
+### log.age
+
+#### log.age
+
+```{r}
+# setup
+pred <- as.data.frame(Effect(c("log.age"), 
+                                m3, 
+                                xlevels = list(log.age = unique(data$log.age)))) %>%
+  mutate(age = round(exp(log.age),0)) %>%
+  arrange(age)
+
+# plot
+ggplot(data = pred) + 
+  geom_point(aes(x = age, 
+                y = exp(fit))) +
+  geom_line(aes(x = age, 
+                y = exp(fit)),
+            alpha = 0.3,
+            #linewidth = 0.3,
+            linetype = "dashed") +
+  geom_errorbar(aes(x = age,
+                  ymin = exp(lower),
+                  ymax = exp(upper)), 
+              alpha = 0.3,
+              width = 0.2) +
+  labs(x = "Age (years)",
+       y = "Predicted increment growth (μm)")
+```
+
+#### log.age\*datasource
+
+```{r message=FALSE, warning=FALSE}
+# setup
+pred <- as.data.frame(Effect(c("log.age", "datasource"), 
+                                m3, 
+                                xlevels = list(log.age = unique(data$log.age)))) %>%
+  mutate(age = round(exp(log.age),0)) %>%
+  arrange(age)
+
+# plot
+ggplot(data = pred) + 
+  geom_line(aes(x = age, 
+                y = exp(fit),
+                color = datasource),
+            linewidth = 0.5) +
+  geom_ribbon(aes(x = age,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = datasource), 
+              alpha = 0.3) +
+  labs(x = "Age (years)",
+       y = "Predicted increment growth (μm)",
+       color = "Reading institute",
+       fill = "Reading institute") +
+   scale_color_manual(values=c("ILVO" = "#e7298a", 
+                              "WUR" = "#66a61e")) +
+   scale_fill_manual(values=c("ILVO" = "#e7298a", 
+                              "WUR" = "#66a61e"))
+
+# summary
+fit_at.base <- exp(filter(pred, datasource == "ILVO")$fit)
+pred_sum <- pred %>% 
+  filter(datasource == "WUR") %>%
+  mutate(fit_at.base = exp(filter(pred, datasource == "ILVO")$fit)) %>%
+  mutate(transfit = exp(fit)) %>%
+  mutate(fit_diff.percent = (transfit - fit_at.base)/fit_at.base*100) %>%
+  mutate(transfit = round(transfit, 2),
+         fit_diff.percent = round(fit_diff.percent, 1)) %>%
+  select(datasource, age, transfit, fit_diff.percent)
+  
+reactable(pred_sum)
+#reactable(pred)
+```
+
+
+### log.aac
+
+```{r message=FALSE, warning=FALSE}
+#### setup
+pred <- as.data.frame(Effect(c("log.aac"), 
+                                 m3, 
+                                 xlevels = list(log.aac = unique(data$log.aac)))) %>%
+  mutate(aac = round(exp(log.aac),0)) %>%
+  arrange(aac)
+
+#### plot
+ggplot(data = pred) + 
+  geom_line(aes(x = aac, 
+                y = exp(fit)),
+            linewidth = 1) +
+  geom_ribbon(aes(x = aac,
+                  ymin = exp(lower),
+                  ymax = exp(upper)), 
+              alpha = 0.5) +
+  labs(x = "Age at capture (years)",
+       y = "Predicted increment growth (μm)",
+       color = "Population",
+       fill = "Population")
+
+#### summary
+pred_sum <- pred %>%
+  mutate(fit_trans = exp(fit)) %>%
+  mutate(fit_diff.percent = (fit_trans - fit_trans[1])/fit_trans[1]*100) %>%
+  select(aac, fit_trans, fit_diff.percent) %>%
+  round(1)
+
+reactable(pred_sum)
+```
+
+## 3.3. Extrinsic effects 
+
+### ssb.i 
+
+```{r message=FALSE, warning=FALSE}
+#### setup
+# note: range m4_nm@frame$ssb.i slightly less than other data (0.44 vs 0.45)
+range_var <- range(m4_isimip@frame$ssb.i)
+range_var <- seq(range_var[1], range_var[2], (range_var[2] - range_var[1])/100)
+
+list_model <- list("isimip" = m4_isimip,
+                   "oras5" = m4_oras5,
+                   "nemo-medusa" = m4_nm
+                   )
+
+pred <- tibble()
+for (i in 1:3) {
+  model <- list_model[[i]]
+  data <- model@frame
+  temp_source <- names(list_model[i])
+  
+  pred_temp <- as.data.frame(Effect(c("ssb.i"), 
+                             model, 
+                             xlevels = list(ssb.i = range_var))) %>%
+  mutate(source = temp_source)
+  
+  pred <- bind_rows(pred, pred_temp) 
+}
+
+pred <- pred %>%
+  left_join(df_temp_name)
+
+#### plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+ggplot(data = pred) + 
+  geom_line(aes(x = ssb.i, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = ssb.i,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  labs(x = "Spawning Stock Biomasss (tonne/km²)",
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_colour_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+
+#### summary
+pred_sum <- pred %>% group_by(source_name) %>% 
+   mutate(state = if_else(ssb.i == max(ssb.i), "fit_at.max", 
+                          if_else(ssb.i == min(ssb.i), "fit_at.min", 
+                                  NA_character_)),
+         transfit = exp(fit)) %>%
+  filter(is.na(state) == F) %>%
+  select(source_name, transfit, state) %>% 
+  pivot_wider(names_from = state, values_from = transfit) %>%
+  mutate(fit_diff.percent = (fit_at.max - fit_at.min)/fit_at.min*100) %>%
+  mutate(across(where(is.numeric), round, 1))
+
+reactable(pred_sum)
+```
+
+### recruitment.i
+
+```{r message=FALSE, warning=FALSE}
+#### setup
+# note: all data having the same recruitment.i range
+
+list_model <- list("isimip" = m4_isimip,
+                   "oras5" = m4_oras5,
+                   "nemo-medusa" = m4_nm
+                   )
+
+pred <- tibble()
+for (i in 1:3) {
+  model <- list_model[[i]]
+  data <- model@frame
+  temp_source <- names(list_model[i])
+  
+  pred_temp <- as.data.frame(Effect(c("recruitment.i"), 
+                             model, 
+                             xlevels = list(recruitment.i = unique(data$recruitment.i)))) %>%
+  mutate(source = temp_source)
+  
+  pred <- bind_rows(pred, pred_temp) 
+}
+
+pred <- pred %>%
+  left_join(df_temp_name)
+
+#### plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+ggplot(data = pred) + 
+  geom_line(aes(x = recruitment.i, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = recruitment.i,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  labs(x = "Recruitment (thoudsand/km²)",
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_colour_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+  
+#### summary
+pred_sum <- pred %>% group_by(source_name) %>% 
+   mutate(state = if_else(recruitment.i == max(recruitment.i), "fit_at.max", 
+                          if_else(recruitment.i == min(recruitment.i), "fit_at.min", 
+                                  NA_character_)),
+         transfit = exp(fit)) %>%
+  filter(is.na(state) == F) %>%
+  select(source_name, transfit, state) %>% 
+  pivot_wider(names_from = state, values_from = transfit) %>%
+  mutate(fit_diff.percent = (fit_at.max - fit_at.min)/fit_at.min*100) %>%
+  mutate(across(where(is.numeric), round, 1))
+
+reactable(pred_sum)
+```
+
+### c.temp
+
+```{r message=FALSE, warning=FALSE}
+#### setup
+# note: fit within range [-1,1] as temperatures has different range 
+
+list_model <- list(#"isimip" = m4_isimip,
+                   "oras5" = m4_oras5,
+                   "nemo-medusa" = m4_nm
+                   )
+
+pred <- tibble()
+for (i in 1:2) {
+  model <- list_model[[i]]
+  data <- model@frame
+  temp_source <- names(list_model[i])
+  
+  pred_temp <- as.data.frame(Effect(c("log.age", "c.temp"), 
+                             model, 
+                             xlevels = list(log.age = unique(data$log.age),
+                                            c.temp = seq(-1, 1, 0.1)))) %>%
+  mutate(age = round(exp(log.age),1)) %>%
+  mutate(source = temp_source)
+  
+  pred <- bind_rows(pred, pred_temp)
+}
+
+df_age <- tibble(age = c(1,5),
+                 age_name = c("Age 1", "Age 5"))
+
+pred <- pred %>% 
+  left_join(df_age) %>%
+  left_join(df_temp_name)
+
+
+#### plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+p1 <- ggplot(data = pred %>% filter(age %in% c(1))) + 
+  geom_line(aes(x = c.temp, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  facet_grid(. ~ age_name)  +
+  labs(x = expression('Temperature'['population-anomaly'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale) 
+
+p2 <- ggplot(data = pred %>% filter(age %in% c(5))) + 
+  geom_line(aes(x = c.temp, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  facet_grid(. ~ age_name) +
+  labs(x = expression('Temperature'['population-anomaly'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale) 
+
+(p1 | p2) + plot_layout(guides = "collect", axis_titles = "collect") 
+
+#### summary
+# summary c.temp 0 and c.temp 1
+pred_sum <- pred %>% 
+  filter(c.temp %in% c(0,1)) %>%
+  group_by(source_name, age) %>% 
+   mutate(state = if_else(c.temp == max(c.temp), "fit_at.max", 
+                          if_else(c.temp == min(c.temp), "fit_at.min", 
+                                  NA_character_)),
+         transfit = exp(fit)) %>%
+  filter(is.na(state) == F) %>%
+  select(source_name, age, transfit, state) %>% 
+  pivot_wider(names_from = state, values_from = transfit) %>%
+  mutate(fit_diff.percent = (fit_at.max - fit_at.min)/fit_at.min*100) %>%
+  mutate(across(where(is.numeric), round, 1))
+
+reactable(pred_sum)
+```
+
+### nutrient 
+
+```{r message=FALSE, warning=FALSE}
+#### setup
+# note: all data having the same TP range
+
+list_model <- list("isimip" = m4_nu_isimip,
+                   "oras5" = m4_nu_oras5,
+                   "nemo-medusa" = m4_nu_nm
+                   )
+
+pred <- tibble()
+for (i in 1:3) {
+  model <- list_model[[i]]
+  data <- model@frame
+  temp_source <- names(list_model[i])
+  
+  pred_temp <- as.data.frame(Effect(c("TP"), 
+                             model, 
+                             xlevels = list(recruitment.i = unique(data$TP)))) %>%
+  mutate(source = temp_source)
+  
+  pred <- bind_rows(pred, pred_temp) 
+}
+
+pred <- pred %>%
+  left_join(df_temp_name)
+
+#### plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+ggplot(data = pred) + 
+  geom_line(aes(x = TP, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = TP,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  labs(x = "Total Phosphorus (kilotonne/year)",
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_colour_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale) 
+
+#### summary
+pred_sum <- pred %>% group_by(source_name) %>% 
+   mutate(state = if_else(TP == max(TP), "fit_at.max", 
+                          if_else(TP == min(TP), "fit_at.min", 
+                                  NA_character_)),
+         transfit = exp(fit)) %>%
+  filter(is.na(state) == F) %>%
+  select(source_name, transfit, state) %>% 
+  pivot_wider(names_from = state, values_from = transfit) %>%
+  mutate(fit_diff.percent = (fit_at.max - fit_at.min)/fit_at.min*100) %>%
+  mutate(across(where(is.numeric), round, 1))
+
+reactable(pred_sum)
+```
+
+
+
+## 3.4. Extrinsic extended effects
+
+### c.temp_within
+
+```{r message=FALSE, warning=FALSE}
+#### setup
+# note: fit within range [-1,1] as temperatures has different range 
+
+list_model <- list("isimip" = m5_isimip,
+                   "oras5" = m5_oras5,
+                   "nemo-medusa" = m5_nm
+                   )
+
+pred <- tibble()
+for (i in 1:3) {
+  model <- list_model[[i]]
+  data <- model@frame
+  temp_source <- names(list_model[i])
+  
+  pred_temp <- as.data.frame(Effect(c("log.age", "c.temp_within"), 
+                             model, 
+                             xlevels = list(log.age = unique(data$log.age),
+                                            c.temp_within = seq(-1, 1, 0.1)))) %>%
+  mutate(age = round(exp(log.age),1)) %>%
+  mutate(source = temp_source)
+  
+  pred <- bind_rows(pred, pred_temp)
+}
+
+df_age <- tibble(age = c(1,5),
+                 age_name = c("Age 1", "Age 5"))
+
+pred <- pred %>% 
+  left_join(df_age) %>%
+  left_join(df_temp_name)
+
+#### plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+p1 <- ggplot(data = pred %>% filter(age %in% c(1))) + 
+  geom_line(aes(x = c.temp_within, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp_within,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  facet_grid(. ~ age_name)  +
+  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+
+p2 <- ggplot(data = pred %>% filter(age %in% c(5))) + 
+  geom_line(aes(x = c.temp_within, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp_within,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  facet_grid(. ~ age_name) +
+  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+
+
+(p1 | p2) + plot_layout(guides = "collect", axis_titles = "collect") 
+
+
+#### summary
+# summary c.temp 0 and c.temp 1
+pred_sum <- pred %>% 
+  filter(c.temp_within %in% c(0,1)) %>%
+  group_by(source_name, age) %>% 
+   mutate(state = if_else(c.temp_within == max(c.temp_within), "fit_at.max", 
+                          if_else(c.temp_within == min(c.temp_within), "fit_at.min", 
+                                  NA_character_)),
+         transfit = exp(fit)) %>%
+  filter(is.na(state) == F) %>%
+  select(source_name, age, transfit, state) %>% 
+  pivot_wider(names_from = state, values_from = transfit) %>%
+  mutate(fit_diff.percent = (fit_at.max - fit_at.min)/fit_at.min*100) %>%
+  mutate(across(where(is.numeric), round, 1))
+
+reactable(pred_sum)
+```
+
+### c.temp_between 
+
+```{r message=FALSE, warning=FALSE}
+#### setup
+# note: fit within range [-1,1] as temperatures has different range 
+# note: oras5 has smaller range [-0.8,0.9]
+
+list_model <- list("isimip" = m5_isimip,
+                   "oras5" = m5_oras5,
+                   "nemo-medusa" = m5_nm
+                   )
+
+pred <- tibble()
+for (i in 1:3) {
+  model <- list_model[[i]]
+  data <- model@frame
+  temp_source <- names(list_model[i])
+  
+  pred_temp <- as.data.frame(Effect(c("log.age", "c.temp_between"), 
+                             model, 
+                             xlevels = list(log.age = unique(data$log.age),
+                                            c.temp_between = seq(-1, 1, 0.1)))) %>%
+  mutate(age = round(exp(log.age),1)) %>%
+  mutate(source = temp_source)
+  
+  pred <- bind_rows(pred, pred_temp)
+}
+
+df_age <- tibble(age = c(1,5),
+                 age_name = c("Age 1", "Age 5"))
+
+pred <- pred %>% 
+  left_join(df_age) %>%
+  left_join(df_temp_name)
+
+#### plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+p1 <- ggplot(data = pred %>% filter(age %in% c(1))) + 
+  geom_line(aes(x = c.temp_between, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp_between,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  facet_grid(. ~ age_name)  +
+  labs(x = expression('Temperature'['individual-average'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+
+p2 <- ggplot(data = pred %>% filter(age %in% c(5))) + 
+  geom_line(aes(x = c.temp_between, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp_between,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  facet_grid(. ~ age_name) +
+  labs(x = expression('Temperature'['individual-average'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+
+(p1 | p2) + plot_layout(guides = "collect", axis_titles = "collect") 
+
+#### summary
+# summary c.temp 0 and c.temp 1
+pred_sum <- pred %>% 
+  filter(c.temp_between %in% c(0,1)) %>%
+  group_by(source_name, age) %>% 
+   mutate(state = if_else(c.temp_between == max(c.temp_between), "fit_at.max", 
+                          if_else(c.temp_between == min(c.temp_between), "fit_at.min", 
+                                  NA_character_)),
+         transfit = exp(fit)) %>%
+  filter(is.na(state) == F) %>%
+  select(source_name, age, transfit, state) %>% 
+  pivot_wider(names_from = state, values_from = transfit) %>%
+  mutate(fit_diff.percent = (fit_at.max - fit_at.min)/fit_at.min*100) %>%
+  mutate(across(where(is.numeric), round, 1))
+
+reactable(pred_sum)
+```
+
+### c.temp_within vs ssb, recruitment, f
+#### ssb - isimip
+```{r}
+# range: p25, 50, 75
+df_age <- tibble(age = c(1,5),
+                 age_name = c("Age 1", "Age 5"))
+
+model <- m5_isimip
+data <- model@frame
+
+df_ssb <- tibble(p_name = c("P25", "P75"),
+                 ssb.i = round(quantile(data$ssb.i, probs = c(0.25, 0.75)),3)) 
+
+pred <- as.data.frame(Effect(c("log.age", "c.temp_within", "ssb.i"), 
+                             model, 
+                             xlevels = list(log.age = unique(data$log.age),
+                                            c.temp_within = seq(-1, 1, 0.1),
+                                            ssb.i = df_ssb$ssb.i))) %>%
+  mutate(age = round(exp(log.age),1)) %>%
+  mutate(source = "isimip")
+  
+pred <- pred %>% 
+  left_join(df_age) %>%
+  left_join(df_temp_name) %>%
+  left_join(df_ssb)
+
+# plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+p1 <- ggplot(data = pred %>% filter(age %in% c(1))) + 
+  geom_line(aes(x = c.temp_within, 
+                y = exp(fit),
+                color = source_name,
+                linetype = p_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp_within,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name,
+                  linetype = p_name),
+              alpha = 0.1) +
+  facet_grid(. ~ age_name)  +
+  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset",
+       linetype = "Spawning Stock Biomass") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale) +
+  guides(
+   colour = guide_legend(order = 1),
+   fill = guide_legend(order = 1),
+   linedtype = guide_legend(order = 2)
+ )
+
+p2 <- ggplot(data = pred %>% filter(age %in% c(5))) + 
+  geom_line(aes(x = c.temp_within, 
+                y = exp(fit),
+                color = source_name,
+                linetype = p_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp_within,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name,
+                  linetype = p_name),
+              alpha = 0.1) +
+  facet_grid(. ~ age_name)  +
+  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset",
+       linetype = "Spawning Stock Biomass") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale) +
+  guides(
+   colour = guide_legend(order = 1),
+   fill = guide_legend(order = 1),
+   linedtype = guide_legend(order = 2)
+ )
+
+(p1 | p2) + plot_layout(guides = "collect", axis_titles = "collect") 
+
+```
+#### recruitment - nemo-medusa
+```{r}
+# recruitment - nemo-medusa
+# range: p25, 50, 75
+df_age <- tibble(age = c(1,5),
+                 age_name = c("Age 1", "Age 5"))
+
+# ssb - isimip
+model <- m5_nm
+data <- model@frame
+
+df_recruitment <- tibble(p_name = c("P25", "P75"),
+                 recruitment.i = round(quantile(data$recruitment.i, probs = c(0.25, 0.75)),3)) 
+
+pred <- as.data.frame(Effect(c("log.age", "c.temp_within", "recruitment.i"), 
+                             model, 
+                             xlevels = list(log.age = unique(data$log.age),
+                                            c.temp_within = seq(-1, 1, 0.1),
+                                            recruitment.i = df_recruitment$recruitment.i))) %>%
+  mutate(age = round(exp(log.age),1)) %>%
+  mutate(source = "nemo-medusa")
+  
+pred <- pred %>% 
+  left_join(df_age) %>%
+  left_join(df_temp_name) %>%
+  left_join(df_recruitment)
+
+# plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+p1 <- ggplot(data = pred %>% filter(age %in% c(1))) + 
+  geom_line(aes(x = c.temp_within, 
+                y = exp(fit),
+                color = source_name,
+                linetype = p_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp_within,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name,
+                  linetype = p_name),
+              alpha = 0.1) +
+  facet_grid(. ~ age_name)  +
+  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset",
+       linetype = "Recruitment") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+
+p2 <- ggplot(data = pred %>% filter(age %in% c(5))) + 
+  geom_line(aes(x = c.temp_within, 
+                y = exp(fit),
+                color = source_name,
+                linetype = p_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp_within,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name,
+                  linetype = p_name),
+              alpha = 0.1) +
+  facet_grid(. ~ age_name) +
+  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset",
+       linetype = "Recruitment") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+
+(p1 | p2) + plot_layout(guides = "collect", axis_titles = "collect") 
+
+```
+#### f - oras5
+```{r}
+# f - oras5
+# range: p25, 50, 75
+df_age <- tibble(age = c(1,5),
+                 age_name = c("Age 1", "Age 5"))
+
+model <- m5_oras5
+data <- model@frame
+
+df_f <- tibble(p_name = c("P25", "P75"),
+                 f = round(quantile(data$f, probs = c(0.25, 0.75)),3)) 
+
+pred <- as.data.frame(Effect(c("log.age", "c.temp_within", "f"), 
+                             model, 
+                             xlevels = list(log.age = unique(data$log.age),
+                                            c.temp_within = seq(-1, 1, 0.1),
+                                            f = df_f$f))) %>%
+  mutate(age = round(exp(log.age),1)) %>%
+  mutate(source = "oras5")
+  
+pred <- pred %>% 
+  left_join(df_age) %>%
+  left_join(df_temp_name) %>%
+  left_join(df_f)
+
+# plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+p1 <- ggplot(data = pred %>% filter(age %in% c(1))) + 
+  geom_line(aes(x = c.temp_within, 
+                y = exp(fit),
+                color = source_name,
+                linetype = p_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp_within,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name,
+                  linetype = p_name),
+              alpha = 0.1) +
+  facet_grid(. ~ age_name) +
+  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset",
+       linetype = "Fishing mortality") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+
+p2 <- ggplot(data = pred %>% filter(age %in% c(5))) + 
+  geom_line(aes(x = c.temp_within, 
+                y = exp(fit),
+                color = source_name,
+                linetype = p_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp_within,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name,
+                  linetype = p_name),
+              alpha = 0.1) +
+  facet_grid(. ~ age_name) +
+  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset",
+       linetype = "Fishing mortality") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+
+(p1 | p2) + plot_layout(guides = "collect", axis_titles = "collect") 
+
+```
+### f
+```{r}
+list_model <- list(
+                   "oras5" = m5_oras5
+                   )
+
+pred <- tibble()
+
+for (i in 1:1) {
+  model <- list_model[[i]]
+  data <- model@frame
+  temp_source <- names(list_model[i])
+  
+  pred_temp <- as.data.frame(Effect(c("f"), 
+                             model, 
+                             xlevels = list(f = unique(data$f)))) %>%
+  mutate(source = temp_source)
+  
+  pred <- bind_rows(pred, pred_temp)
+}
+
+pred <- pred %>% 
+  left_join(df_temp_name)
+
+#### plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+ggplot(data = pred) + 
+  geom_line(aes(x = f, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = f,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  labs(x = "Fishing mortality",
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+
+
+#### summary
+pred_sum <- pred %>% 
+  group_by(source_name) %>% 
+   mutate(state = if_else(f == max(f), "fit_at.max", 
+                          if_else(f == min(f), "fit_at.min", 
+                                  NA_character_)),
+         transfit = exp(fit)) %>%
+  filter(is.na(state) == F) %>%
+  select(source_name, transfit, state) %>% 
+  pivot_wider(names_from = state, values_from = transfit) %>%
+  mutate(fit_diff.percent = (fit_at.max - fit_at.min)/fit_at.min*100) %>%
+  mutate(across(where(is.numeric), round, 1))
+
+reactable(pred_sum)
+```
+
+### ssb.i
+```{r}
+list_model <- list("isimip" = m5_isimip,
+                   "oras5" = m5_oras5,
+                   "nemo-medusa" = m5_nm
+                   )
+# 0.02-0.46 - nemo-medusa different range ssb.i
+pred <- tibble()
+for (i in 1:3) {
+  model <- list_model[[i]]
+  data <- model@frame
+  temp_source <- names(list_model[i])
+  
+  pred_temp <- as.data.frame(Effect(c("ssb.i"), 
+                             model, 
+                             xlevels = list(ssb.i = seq(0.02, 0.46, 0.01)))) %>%
+  mutate(source = temp_source)
+  
+  pred <- bind_rows(pred, pred_temp)
+}
+
+pred <- pred %>% 
+  left_join(df_temp_name)
+
+#### plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+ggplot(data = pred) + 
+  geom_line(aes(x = ssb.i, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = ssb.i,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  labs(x = "Spawning stock biomasss (tonne/km²)",
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+
+#### summary
+pred_sum <- pred %>% 
+  group_by(source_name) %>% 
+   mutate(state = if_else(ssb.i == max(ssb.i), "fit_at.max", 
+                          if_else(ssb.i == min(ssb.i), "fit_at.min", 
+                                  NA_character_)),
+         transfit = exp(fit)) %>%
+  filter(is.na(state) == F) %>%
+  select(source_name, transfit, state) %>% 
+  pivot_wider(names_from = state, values_from = transfit) %>%
+  mutate(fit_diff.percent = (fit_at.max - fit_at.min)/fit_at.min*100) %>%
+  mutate(across(where(is.numeric), round, 1))
+
+reactable(pred_sum)
+```
+### recruitment.i
+```{r}
+list_model <- list("isimip" = m5_isimip,
+                   "oras5" = m5_oras5,
+                   "nemo-medusa" = m5_nm
+                   )
+pred <- tibble()
+for (i in 1:3) {
+  model <- list_model[[i]]
+  data <- model@frame
+  temp_source <- names(list_model[i])
+  
+  pred_temp <- as.data.frame(Effect(c("recruitment.i"), 
+                             model, 
+                             xlevels = list(recruitment.i = seq(0.01, 2.53, 0.01)))) %>%
+  mutate(source = temp_source)
+  
+  pred <- bind_rows(pred, pred_temp)
+}
+
+pred <- pred %>% 
+  left_join(df_temp_name)
+
+#### plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+ggplot(data = pred) + 
+  geom_line(aes(x = recruitment.i, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = recruitment.i,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  labs(x = "Recruitment (thoudsand/km²)",
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+
+#### summary
+pred_sum <- pred %>% 
+  group_by(source_name) %>% 
+   mutate(state = if_else(recruitment.i == max(recruitment.i), "fit_at.max", 
+                          if_else(recruitment.i == min(recruitment.i), "fit_at.min", 
+                                  NA_character_)),
+         transfit = exp(fit)) %>%
+  filter(is.na(state) == F) %>%
+  select(source_name, transfit, state) %>% 
+  pivot_wider(names_from = state, values_from = transfit) %>%
+  mutate(fit_diff.percent = (fit_at.max - fit_at.min)/fit_at.min*100) %>%
+  mutate(across(where(is.numeric), round, 1))
+
+reactable(pred_sum)
+```
+
+
+### nutrient
+```{r}
+list_model <- list("isimip" = m5_nu_isimip,
+                   "oras5" = m5_nu_oras5
+                   )
+# 
+pred <- tibble()
+for (i in 1:2) {
+  model <- list_model[[i]]
+  data <- model@frame
+  temp_source <- names(list_model[i])
+  
+  pred_temp <- as.data.frame(Effect(c("TP"), 
+                             model, 
+                             xlevels = list(TP = unique(data$TP)))) %>%
+  mutate(source = temp_source)
+  
+  pred <- bind_rows(pred, pred_temp)
+}
+
+pred <- pred %>% 
+  left_join(df_temp_name)
+
+#### plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+ggplot(data = pred) + 
+  geom_line(aes(x = TP, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = TP,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  labs(x = "Total Phosphorus (kilotonne/year)",
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale)
+
+#### summary
+pred_sum <- pred %>% 
+  group_by(source_name) %>% 
+   mutate(state = if_else(TP == max(TP), "fit_at.max", 
+                          if_else(TP == min(TP), "fit_at.min", 
+                                  NA_character_)),
+         transfit = exp(fit)) %>%
+  filter(is.na(state) == F) %>%
+  select(source_name, transfit, state) %>% 
+  pivot_wider(names_from = state, values_from = transfit) %>%
+  mutate(fit_diff.percent = (fit_at.max - fit_at.min)/fit_at.min*100) %>%
+  mutate(across(where(is.numeric), round, 1))
+
+reactable(pred_sum)
+```
+
+## 3.5. Scaled models
+
+### extrinsic effects 
+#### oras5
+```{r message=FALSE, warning=FALSE}
+#### setup
+# df_age
+data_age <- data_otl %>%
+  mutate(s.log.age = s.(log.age))
+df_age <- select(data_age, age, s.log.age) %>% unique() %>% arrange(age) %>% round(2)
+
+# data and model
+data <- m4_oras5_s@frame
+model <- m4_oras5_s
+
+# temperature
+pred_temp <- as.data.frame(Effect(c("s.log.age", "s.c.temp"),
+                                 model,
+                             xlevels = list(s.log.age = df_age$s.log.age,
+                                            s.c.temp = seq(0, 1, 0.1)))) %>%
+  mutate(var = s.c.temp) %>%
+  left_join(df_age) %>%
+  mutate(fit_trans = exp(fit),
+         upper_trans = exp(upper),
+         lower_trans = exp(lower)) %>%
+  select(age, var, fit_trans, upper_trans, lower_trans) %>%
+  mutate(var_name = "Temperature",
+         age_name = paste0("Age ", age))
+
+# ssb
+pred_ssb <- as.data.frame(Effect(c("s.log.age", "s.ssb.i"),
+                                 model,
+                             xlevels = list(s.log.age = df_age$s.log.age,
+                                            s.ssb.i = seq(0, 1, 0.1)))) %>%
+  mutate(var = s.ssb.i) %>%
+  left_join(df_age) %>%
+  mutate(fit_trans = exp(fit),
+         upper_trans = exp(upper),
+         lower_trans = exp(lower)) %>%
+  select(age, var, fit_trans, upper_trans, lower_trans) %>%
+  mutate(var_name = "Spawning Stock Biomass",
+         age_name = paste0("Age ", age))
+
+
+# recruitment
+pred_rec <- as.data.frame(Effect(c("s.log.age", "s.recruitment.i"),
+                                 model,
+                             xlevels = list(s.log.age = df_age$s.log.age,
+                                            s.recruitment.i = seq(0, 1, 0.1)))) %>%
+  mutate(var = s.recruitment.i) %>%
+  left_join(df_age) %>%
+  mutate(fit_trans = exp(fit),
+         upper_trans = exp(upper),
+         lower_trans = exp(lower)) %>%
+  select(age, var, fit_trans, upper_trans, lower_trans) %>%
+  mutate(var_name = "Recruitment",
+         age_name = paste0("Age ", age))
+
+# all extrinsic variables
+pred <- bind_rows(pred_temp, pred_ssb, pred_rec)
+```
+
+```{r}
+#### summary
+pred_sum <- pred %>% 
+  filter(var %in% c(0,1)) %>%
+  select(var_name, age, var, fit_trans) %>%
+  group_by(var_name, age) %>%
+  pivot_wider(names_from = var, values_from = fit_trans) %>%
+  mutate(diff = (`1`-`0`)/`0`*100) %>%
+  mutate(across(where(is.numeric), round, 2)) %>%
+  arrange(age)
+  
+# summary all ages
+reactable(pred_sum %>% 
+            select(var_name, age, diff) %>% 
+            pivot_wider(names_from = var_name, values_from = diff)
+          )
+
+pred_sum <- pred_sum %>%
+  mutate(var_name = factor(var_name, levels = c("Temperature", 
+                                              "Spawning Stock Biomass",
+                                              "Recruitment")),
+           sign = if_else(diff < 0, "Negative", "Positive"),
+         source_name = "ORAS5")
+
+#### plot
+scale_shape = c("Temperature" = 15, 
+                "Spawning Stock Biomass" = 2, 
+                "Recruitment" = 5,
+                "Total Phosphorous" = 6)
+
+unique(pred_sum$var_name)
+
+ggplot(data = pred_sum) +
+  geom_point(aes(x = age, y = abs(diff), shape = var_name, color = sign)) +
+  scale_shape_manual(values = scale_shape,
+                     labels = expression('Temperature'['population-anomaly'],
+                                         'Spawing Stock Biomass', 
+                                         'Recruitment')) +
+  theme(legend.text.align = 0) +
+  labs(x = "Age",
+       y = "Growth change (%)",
+       shape = "Predictor",
+       color = "Effect direction") +
+  facet_grid(. ~ source_name)
+
+p_oras5 <- last_plot()                
+```
+
+#### nemo-medusa
+```{r message=FALSE, warning=FALSE}
+#### setup
+# df_age
+data_age <- data_otl %>%
+  mutate(s.log.age = s.(log.age))
+df_age <- select(data_age, age, s.log.age) %>% unique() %>% arrange(age) %>% round(2)
+
+# data and model
+data <- m4_nm_s@frame
+model <- m4_nm_s
+
+# temperature
+pred_temp <- as.data.frame(Effect(c("s.log.age", "s.c.temp"),
+                                 model,
+                             xlevels = list(s.log.age = df_age$s.log.age,
+                                            s.c.temp = seq(0, 1, 0.1)))) %>%
+  mutate(var = s.c.temp) %>%
+  left_join(df_age) %>%
+  mutate(fit_trans = exp(fit),
+         upper_trans = exp(upper),
+         lower_trans = exp(lower)) %>%
+  select(age, var, fit_trans, upper_trans, lower_trans) %>%
+  mutate(var_name = "Temperature",
+         age_name = paste0("Age ", age))
+
+# ssb
+pred_ssb <- as.data.frame(Effect(c("s.log.age", "s.ssb.i"),
+                                 model,
+                             xlevels = list(s.log.age = df_age$s.log.age,
+                                            s.ssb.i = seq(0, 1, 0.1)))) %>%
+  mutate(var = s.ssb.i) %>%
+  left_join(df_age) %>%
+  mutate(fit_trans = exp(fit),
+         upper_trans = exp(upper),
+         lower_trans = exp(lower)) %>%
+  select(age, var, fit_trans, upper_trans, lower_trans) %>%
+  mutate(var_name = "Spawning Stock Biomass",
+         age_name = paste0("Age ", age))
+
+
+# recruitment
+pred_rec <- as.data.frame(Effect(c("s.log.age", "s.recruitment.i"),
+                                 model,
+                             xlevels = list(s.log.age = df_age$s.log.age,
+                                            s.recruitment.i = seq(0, 1, 0.1)))) %>%
+  mutate(var = s.recruitment.i) %>%
+  left_join(df_age) %>%
+  mutate(fit_trans = exp(fit),
+         upper_trans = exp(upper),
+         lower_trans = exp(lower)) %>%
+  select(age, var, fit_trans, upper_trans, lower_trans) %>%
+  mutate(var_name = "Recruitment",
+         age_name = paste0("Age ", age))
+
+# all extrinsic variables
+pred <- bind_rows(pred_temp, pred_ssb, pred_rec)
+```
+
+
+```{r}
+#### summary
+pred_sum <- pred %>% 
+  filter(var %in% c(0,1)) %>%
+  select(var_name, age, var, fit_trans) %>%
+  group_by(var_name, age) %>%
+  pivot_wider(names_from = var, values_from = fit_trans) %>%
+  mutate(diff = (`1`-`0`)/`0`*100) %>%
+  mutate(across(where(is.numeric), round, 2)) %>%
+  arrange(age)
+  
+# summary all ages
+reactable(pred_sum %>% 
+            select(var_name, age, diff) %>% 
+            pivot_wider(names_from = var_name, values_from = diff)
+          )
+
+pred_sum <- pred_sum %>%
+  mutate(var_name = factor(var_name, levels = c("Temperature", 
+                                              "Spawning Stock Biomass",
+                                              "Recruitment")),
+           sign = if_else(diff < 0, "Negative", "Positive"),
+         source_name = "NEMO-MEDUSA")
+
+#### plot
+scale_shape = c("Temperature" = 15, 
+                "Spawning Stock Biomass" = 2, 
+                "Recruitment" = 5,
+                "Total Phosphorous" = 6)
+
+unique(pred_sum$var_name)
+
+ggplot(data = pred_sum) +
+  geom_point(aes(x = age, y = abs(diff), shape = var_name, color = sign)) +
+  scale_shape_manual(values = scale_shape,
+                     labels = expression('Temperature'['population-anomaly'],
+                                         'Spawing Stock Biomass', 
+                                         'Recruitment')) +
+  theme(legend.text.align = 0) +
+  labs(x = "Age",
+       y = "Growth change (%)",
+       shape = "Predictor",
+       color = "Effect direction") +
+  facet_grid(. ~ source_name)
+
+p_nm <- last_plot()
+```
+
+#### all
+```{r}
+(p_oras5 + p_nm) + plot_layout(guides = "collect", axis = "collect")
+```
+
+
+### extrinsic effects - nutrient 
+#### oras5
+```{r message=FALSE, warning=FALSE}
+#### setup
+# model
+model <- m4_nu_oras5_s
+
+# data and model
+data <- data_otl %>% 
+  left_join(filter(data_temp, source == "oras5"),
+            by = join_by(pop, year)) %>%
+  filter(is.na(c.temp) == F) %>%
+  left_join(data_sol, by = join_by(pop, year)) %>%
+  left_join(data_nu, by = join_by(pop, year))
+data <- data %>% filter(!is.na(TN) & !is.na(TP))
+data <- data %>%
+  mutate(s.log.age = s.(log.age),
+         s.log.aac = s.(log.aac),
+         s.c.temp = s.(c.temp),
+         s.ssb.i = s.(ssb.i),
+         s.recruitment.i = s.(recruitment.i),
+         s.TP = s.(TP))
+
+# df_age
+df_age <- select(data, age, s.log.age) %>% unique() %>% arrange(age) %>% round(2)
+
+# temperature
+pred_temp <- as.data.frame(Effect(c("s.log.age", "s.c.temp"),
+                                 model,
+                             xlevels = list(s.log.age = df_age$s.log.age,
+                                            s.c.temp = seq(0, 1, 0.1)))) %>%
+  mutate(var = s.c.temp) %>%
+  left_join(df_age) %>%
+  mutate(fit_trans = exp(fit),
+         upper_trans = exp(upper),
+         lower_trans = exp(lower)) %>%
+  select(age, var, fit_trans, upper_trans, lower_trans) %>%
+  mutate(var_name = "Temperature",
+         age_name = paste0("Age ", age))
+
+# ssb
+pred_ssb <- as.data.frame(Effect(c("s.log.age", "s.ssb.i"),
+                                 model,
+                             xlevels = list(s.log.age = df_age$s.log.age,
+                                            s.ssb.i = seq(0, 1, 0.1)))) %>%
+  mutate(var = s.ssb.i) %>%
+  left_join(df_age) %>%
+  mutate(fit_trans = exp(fit),
+         upper_trans = exp(upper),
+         lower_trans = exp(lower)) %>%
+  select(age, var, fit_trans, upper_trans, lower_trans) %>%
+  mutate(var_name = "Spawning Stock Biomass",
+         age_name = paste0("Age ", age))
+
+
+# recruitment
+pred_rec <- as.data.frame(Effect(c("s.log.age", "s.recruitment.i"),
+                                 model,
+                             xlevels = list(s.log.age = df_age$s.log.age,
+                                            s.recruitment.i = seq(0, 1, 0.1)))) %>%
+  mutate(var = s.recruitment.i) %>%
+  left_join(df_age) %>%
+  mutate(fit_trans = exp(fit),
+         upper_trans = exp(upper),
+         lower_trans = exp(lower)) %>%
+  select(age, var, fit_trans, upper_trans, lower_trans) %>%
+  mutate(var_name = "Recruitment",
+         age_name = paste0("Age ", age))
+
+# TP
+pred_tp <- as.data.frame(Effect(c("s.log.age", "s.TP"),
+                                 model,
+                             xlevels = list(s.log.age = df_age$s.log.age,
+                                            s.TP = seq(0, 1, 0.1)))) %>%
+  mutate(var = s.TP) %>%
+  left_join(df_age) %>%
+  mutate(fit_trans = exp(fit),
+         upper_trans = exp(upper),
+         lower_trans = exp(lower)) %>%
+  select(age, var, fit_trans, upper_trans, lower_trans) %>%
+  mutate(var_name = "Total Phosphorous",
+         age_name = paste0("Age ", age))
+
+# all extrinsic variables
+pred <- bind_rows(pred_temp, pred_ssb, pred_rec, pred_tp)
+```
+
+```{r}
+#### summary
+pred_sum <- pred %>% 
+  filter(var %in% c(0,1)) %>%
+  select(var_name, age, var, fit_trans) %>%
+  group_by(var_name, age) %>%
+  pivot_wider(names_from = var, values_from = fit_trans) %>%
+  mutate(diff = (`1`-`0`)/`0`*100) %>%
+  mutate(across(where(is.numeric), round, 2)) %>%
+  arrange(age)
+  
+# summary all ages
+reactable(pred_sum %>% 
+            select(var_name, age, diff) %>% 
+            pivot_wider(names_from = var_name, values_from = diff)
+          )
+
+pred_sum <- pred_sum %>%
+  mutate(var_name = factor(var_name, levels = c("Temperature", 
+                                              "Spawning Stock Biomass",
+                                              "Recruitment",
+                                              "Total Phosphorous")),
+           sign = if_else(diff < 0, "Negative", "Positive"),
+         source_name = "ORAS5")
+
+#### plot
+scale_shape = c("Temperature" = 15, 
+                "Spawning Stock Biomass" = 2, 
+                "Recruitment" = 5,
+                "Total Phosphorous" = 6)
+
+ggplot(data = pred_sum) +
+  geom_point(aes(x = age, y = abs(diff), shape = var_name, color = sign)) +
+  scale_shape_manual(values = scale_shape,
+                     labels = expression('Temperature'['population-anomaly'],
+                                         'Spawing Stock Biomass', 
+                                         'Recruitment',
+                                         'Total Phosphorous')) +
+  theme(legend.text.align = 0) +
+  labs(x = "Age",
+       y = "Growth change (%)",
+       shape = "Predictor",
+       color = "Effect direction") +
+  facet_grid(. ~ source_name)
+
+p_oras5 <- last_plot()
+```
+#### nemo-medusa
+```{r message=FALSE, warning=FALSE}
+#### setup
+# model
+model <- m4_nu_nm_s
+
+# data and model
+data <- data_otl %>% 
+  left_join(filter(data_temp, source == "nemo-medusa"),
+            by = join_by(pop, year)) %>%
+  filter(is.na(c.temp) == F) %>%
+  left_join(data_sol, by = join_by(pop, year)) %>%
+  left_join(data_nu, by = join_by(pop, year))
+data <- data %>% filter(!is.na(TN) & !is.na(TP))
+data <- data %>%
+  mutate(s.log.age = s.(log.age),
+         s.log.aac = s.(log.aac),
+         s.c.temp = s.(c.temp),
+         s.ssb.i = s.(ssb.i),
+         s.recruitment.i = s.(recruitment.i),
+         s.TP = s.(TP))
+
+# df_age
+df_age <- select(data, age, s.log.age) %>% unique() %>% arrange(age) %>% round(2)
+
+# temperature
+pred_temp <- as.data.frame(Effect(c("s.log.age", "s.c.temp"),
+                                 model,
+                             xlevels = list(s.log.age = df_age$s.log.age,
+                                            s.c.temp = seq(0, 1, 0.1)))) %>%
+  mutate(var = s.c.temp) %>%
+  left_join(df_age) %>%
+  mutate(fit_trans = exp(fit),
+         upper_trans = exp(upper),
+         lower_trans = exp(lower)) %>%
+  select(age, var, fit_trans, upper_trans, lower_trans) %>%
+  mutate(var_name = "Temperature",
+         age_name = paste0("Age ", age))
+
+# ssb
+pred_ssb <- as.data.frame(Effect(c("s.log.age", "s.ssb.i"),
+                                 model,
+                             xlevels = list(s.log.age = df_age$s.log.age,
+                                            s.ssb.i = seq(0, 1, 0.1)))) %>%
+  mutate(var = s.ssb.i) %>%
+  left_join(df_age) %>%
+  mutate(fit_trans = exp(fit),
+         upper_trans = exp(upper),
+         lower_trans = exp(lower)) %>%
+  select(age, var, fit_trans, upper_trans, lower_trans) %>%
+  mutate(var_name = "Spawning Stock Biomass",
+         age_name = paste0("Age ", age))
+
+# recruitment
+pred_rec <- as.data.frame(Effect(c("s.log.age", "s.recruitment.i"),
+                                 model,
+                             xlevels = list(s.log.age = df_age$s.log.age,
+                                            s.recruitment.i = seq(0, 1, 0.1)))) %>%
+  mutate(var = s.recruitment.i) %>%
+  left_join(df_age) %>%
+  mutate(fit_trans = exp(fit),
+         upper_trans = exp(upper),
+         lower_trans = exp(lower)) %>%
+  select(age, var, fit_trans, upper_trans, lower_trans) %>%
+  mutate(var_name = "Recruitment",
+         age_name = paste0("Age ", age))
+
+
+# all extrinsic variables
+pred <- bind_rows(pred_temp, pred_ssb, pred_rec)
+```
+
+```{r}
+#### summary
+pred_sum <- pred %>% 
+  filter(var %in% c(0,1)) %>%
+  select(var_name, age, var, fit_trans) %>%
+  group_by(var_name, age) %>%
+  pivot_wider(names_from = var, values_from = fit_trans) %>%
+  mutate(diff = (`1`-`0`)/`0`*100) %>%
+  mutate(across(where(is.numeric), round, 2)) %>%
+  arrange(age)
+  
+# summary age 1,5,10
+reactable(pred_sum %>% filter(age %in% c(1,5,10)))
+
+# summary all ages
+reactable(pred_sum %>% 
+            select(var_name, age, diff) %>% 
+            pivot_wider(names_from = var_name, values_from = diff)
+          )
+
+pred_sum <- pred_sum %>%
+  mutate(var_name = factor(var_name, levels = c("Temperature", 
+                                              "Spawning Stock Biomass",
+                                              "Recruitment",
+                                              "Total phosphorus")),
+           sign = if_else(diff < 0, "Negative", "Positive"),
+         source_name = "NEMO-MEDUSA")
+
+#### plot
+scale_shape = c("Temperature" = 15, 
+                "Spawning Stock Biomass" = 2, 
+                "Recruitment" = 5,
+                "Total phosphorus" = 6)
+
+ggplot(data = pred_sum) +
+  geom_point(aes(x = age, y = abs(diff), shape = var_name, color = sign)) +
+  scale_shape_manual(values = scale_shape,
+                     labels = expression('Temperature'['population-anomaly'],
+                                         'Spawing Stock Biomass', 
+                                         'Recruitment',
+                                         'Total phosphorus')) +
+  theme(legend.text.align = 0) +
+  theme(legend.position = "none") +
+  labs(x = "Age",
+       y = "Growth change (%)",
+       shape = NULL,
+       color = NULL) +
+  facet_grid(. ~ source_name)
+
+p_nm <- last_plot()
+```
+
+#### all
+```{r}
+(p_oras5 + p_nm) + plot_layout(guide = "collect", axis = "collect")
+```
+
+## 3.6. Individual plastic variance
+### variance ratio
+```{r}
+#### data
+list_source <- c("isimip", "oras5", "nemo-medusa")
+
+list_pair <- tibble(pop_pair = c("4bc/8ab", "7a/8ab", "4bc/7a"),
+                    pop_pair_name = factor(c("North Sea/Bay of Biscay", 
+                                             "Irish Sea/Bay of Biscay", 
+                                             "North Sea/Irish Sea"),
+                                           levels = c("North Sea/Bay of Biscay", 
+                                             "Irish Sea/Bay of Biscay", 
+                                             "North Sea/Irish Sea")))
+
+var_ratio <- tibble()
+for (i in 1:3) {
+  var_ratio_temp <- read_rds(file.path(dir_output, paste0("ind.plastic_var.ratio_", list_source[i], ".rds")))
+  
+  var_ratio_temp <- var_ratio_temp %>%
+  group_by(pop_pair, age_range, n_pop1, n_pop2) %>%
+  summarise(across(where(is.numeric), ~ mean(.x))) %>% 
+  mutate(across(var_ratio:ci_upper, ~ round(., 2))) %>%
+  mutate(p.value = round(p.value, 3))
+  
+  var_ratio_temp <- var_ratio_temp %>% 
+    mutate(source = list_source[i]) %>%
+    mutate(sig_level = if_else(p.value < 0.05, "significant", "non-significant")) %>%
+    mutate(subset = paste(substr(age_range, 5, 5),
+                          substr(age_range, 13, 14),
+                          sep = "-"))
+  
+  var_ratio <- bind_rows(var_ratio, var_ratio_temp)
+  
+}
+
+var_ratio <- var_ratio %>% 
+  left_join(df_temp_name) %>%
+  left_join(list_pair)
+
+#### plot
+ggplot() +
+  geom_point(data = var_ratio, 
+             aes(x = pop_pair_name,
+                 y = var_ratio, 
+                 color = subset),
+             position = position_dodge(width=0.5)) +
+  geom_linerange(data = var_ratio, 
+                aes(x = pop_pair_name, 
+                    y = var_ratio, 
+                    ymin = ci_lower, 
+                    ymax = ci_upper, 
+                    color = subset),
+                position = position_dodge(width=0.5)) +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  facet_grid(source_name ~ .) +
+  scale_color_brewer(palette = "Paired") +
+  labs(x = NULL,
+       y = "Variance ratio",
+       color = "Increment measurement range") +
+  theme(legend.position = "bottom")
+
+```
+
+### cohort-specific variance vs environment
+```{r}
+cor_isimip <- read_rds(file.path(dir_output, paste0("ind.plastic_cor.test_", "isimip", ".rds"))) %>%
+  mutate(source = "isimip")
+cor_oras5 <- read_rds(file.path(dir_output, paste0("ind.plastic_cor.test_", "oras5", ".rds"))) %>%
+  mutate(source = "oras5")
+cor_nm <- read_rds(file.path(dir_output, paste0("ind.plastic_cor.test_", "nemo-medusa", ".rds"))) %>%
+  mutate(source = "nemo-medusa")
+
+list_var <- tibble(var2 = c("c.temp", "ssb.i", "recruitment.i", "f"),
+              var_name = factor(c("Temperature",
+                           "Spawning Stock Biomass",
+                           "Recruitment",
+                           "Fishing mortality"),
+                           levels = c("Temperature",
+                           "Spawning Stock Biomass",
+                           "Recruitment",
+                           "Fishing mortality")))
+
+list_subset <- tibble(subset = c("all ages", "age 6+"),
+                      subset_name = c("full range",
+                                      "6+"))
+
+cor_all <- bind_rows(cor_isimip, cor_oras5, cor_nm)
+cor_all <- cor_all %>% 
+  left_join(df_temp_name) %>%
+  left_join(list_var) %>%
+  left_join(list_subset) %>%
+  left_join(df_pop)
+
+
+ggplot() +
+  geom_point(data = cor_all %>% filter(sig_level == "significant"), 
+             aes(x = pop.name, y = cor, color = subset_name),
+             position=position_dodge(width=0.5)) +
+  geom_linerange(data = cor_all %>% filter(sig_level == "significant"), 
+                 aes(x = pop.name, y = cor, ymin = conf.low, ymax = conf.high, 
+                     color = subset_name),
+                 position=position_dodge(width=0.5)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  facet_grid(source_name ~ var_name) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        legend.position = "bottom") +
+  scale_color_brewer(palette = "Paired") +
+  labs(x = NULL,
+       y = "Pearson correlation",
+       color = "Increment measurement range") 
+
+```
+  

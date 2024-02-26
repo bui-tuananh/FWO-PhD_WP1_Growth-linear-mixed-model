@@ -1,0 +1,2950 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={ices ctd bottom temperature process},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{ices ctd bottom temperature process}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+\hypertarget{info}{%
+\subsection{INFO}\label{info}}
+
+TEAMPERATURE DATA EXPLORATION (ICES CTD, ISIMIP SBT, HADISST)
+
+PROJECT: FWO PHD - WP1
+
+Tuan Anh Bui (23/02/2023)
+
+Compare ICES CTD data and ISIMIP Sea bottom temperature vs HADISST sea
+surface temperature
+
+\hypertarget{setup}{%
+\subsubsection{1. SETUP}\label{setup}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tidyverse)  }\CommentTok{\# process dataframe}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'tidyverse' was built under R version 4.2.2
+\end{verbatim}
+
+\begin{verbatim}
+## -- Attaching packages --------------------------------------- tidyverse 1.3.2 --
+## v ggplot2 3.4.1     v purrr   0.3.4
+## v tibble  3.1.7     v dplyr   1.0.9
+## v tidyr   1.2.0     v stringr 1.4.0
+## v readr   2.1.2     v forcats 0.5.1
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'ggplot2' was built under R version 4.2.2
+\end{verbatim}
+
+\begin{verbatim}
+## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(lubridate)  }\CommentTok{\# process date time }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'lubridate'
+## 
+## The following objects are masked from 'package:base':
+## 
+##     date, intersect, setdiff, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(readr)      }\CommentTok{\# read csv}
+\FunctionTok{library}\NormalTok{(sf)         }\CommentTok{\# process GIS files}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'sf' was built under R version 4.2.2
+\end{verbatim}
+
+\begin{verbatim}
+## Linking to GEOS 3.9.3, GDAL 3.5.2, PROJ 8.2.1; sf_use_s2() is TRUE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(stars)      }\CommentTok{\# process raster files}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'stars' was built under R version 4.2.2
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: abind
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(viridis)    }\CommentTok{\# color scale}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: viridisLite
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'viridisLite' was built under R version 4.2.3
+\end{verbatim}
+
+\hypertarget{read-data}{%
+\subsubsection{2. READ DATA}\label{read-data}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# ICES AREA}
+\NormalTok{dir\_gis }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Admin"}
+\NormalTok{file\_gis }\OtherTok{\textless{}{-}} \StringTok{"ices\_areas\_sub\_group\_4326\_new.gpkg"}
+
+\NormalTok{ices\_area }\OtherTok{\textless{}{-}} \FunctionTok{read\_sf}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_gis, file\_gis))}
+
+\NormalTok{ices\_area }\OtherTok{\textless{}{-}}\NormalTok{ ices\_area }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(Area\_27) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"7a"}\NormalTok{, }\StringTok{"8ab"}\NormalTok{, }\StringTok{"4bc"}\NormalTok{))}
+
+\CommentTok{\# CTD}
+\NormalTok{dir\_ctd }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Env/Sea Bottom Temperature\_ICES CTD\_1970{-}2020"}
+\NormalTok{file\_ctd }\OtherTok{\textless{}{-}} \StringTok{"ices\_ctd\_sea{-}bottom{-}temperature.gpkg"}
+
+\NormalTok{ctd }\OtherTok{\textless{}{-}} \FunctionTok{read\_sf}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_ctd, file\_ctd))}
+\NormalTok{ctd }\OtherTok{\textless{}{-}}\NormalTok{ ctd }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"7a"}\NormalTok{, }\StringTok{"8ab"}\NormalTok{, }\StringTok{"4bc"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{compare-ices-ctd-to-isimip-thetao-isimip-tob-and-hadisst}{%
+\subsubsection{3. COMPARE ICES CTD TO ISIMIP THETAO, ISIMIP TOB, AND
+HADISST}\label{compare-ices-ctd-to-isimip-thetao-isimip-tob-and-hadisst}}
+
+\hypertarget{isimip-thetao}{%
+\paragraph{3.1. ISIMIP THETAO}\label{isimip-thetao}}
+
+ISIMIP thetao - potential sea water temperature. The original data has
+temperature at depth but was processed to obtain sea bottom temperature
+
+\hypertarget{process-data}{%
+\subparagraph{Process data}\label{process-data}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# load data}
+
+\NormalTok{dir\_thetao }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Env/Sea Temperature\_ISIMIP3\_0.5deg\_1850{-}2014"}
+\NormalTok{file\_thetao }\OtherTok{\textless{}{-}} \StringTok{"sea bottom temperature\_mpi{-}esm\_05deg.tif"}
+
+\NormalTok{thetao }\OtherTok{\textless{}{-}} \FunctionTok{read\_stars}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_thetao, file\_thetao))}
+
+\CommentTok{\# Extract values of thetao at ctd points}
+\CommentTok{\# change time values thetao}
+\NormalTok{year\_thetao }\OtherTok{\textless{}{-}} \FunctionTok{str\_sub}\NormalTok{(}\FunctionTok{attr}\NormalTok{(thetao, }\StringTok{"dimensions"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{band}\SpecialCharTok{$}\NormalTok{values, }\AttributeTok{start =} \DecValTok{4}\NormalTok{, }\AttributeTok{end =} \DecValTok{7}\NormalTok{)}
+\NormalTok{month\_thetao }\OtherTok{\textless{}{-}} \FunctionTok{str\_sub}\NormalTok{(}\FunctionTok{attr}\NormalTok{(thetao, }\StringTok{"dimensions"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{band}\SpecialCharTok{$}\NormalTok{values, }\AttributeTok{start =} \DecValTok{9}\NormalTok{, }\AttributeTok{end =} \DecValTok{10}\NormalTok{)}
+\NormalTok{date\_thetao }\OtherTok{\textless{}{-}} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"01"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, month\_thetao, }\StringTok{"{-}"}\NormalTok{, year\_thetao),}\AttributeTok{format =} \StringTok{"\%d{-}\%m{-}\%Y"}\NormalTok{)}
+
+\CommentTok{\# change band dimension to time dimension}
+\NormalTok{thetao }\OtherTok{\textless{}{-}} \FunctionTok{st\_set\_dimensions}\NormalTok{(thetao, }\DecValTok{3}\NormalTok{, }\AttributeTok{values =}\NormalTok{ date\_thetao, }\AttributeTok{names =} \StringTok{"time"}\NormalTok{)}
+
+\CommentTok{\# change time ctd\_test}
+\NormalTok{ctd }\OtherTok{\textless{}{-}}\NormalTok{ ctd }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{date\_match =} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"01"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, Month, }\StringTok{"{-}"}\NormalTok{, Year),}\AttributeTok{format =} \StringTok{"\%d{-}\%m{-}\%Y"}\NormalTok{))}
+
+\CommentTok{\# extract }
+\NormalTok{thetao\_extract }\OtherTok{\textless{}{-}} \FunctionTok{st\_extract}\NormalTok{(thetao, ctd, }\AttributeTok{time\_column =} \StringTok{"date\_match"}\NormalTok{)}
+
+\CommentTok{\# joint with ctd data for comparison}
+\NormalTok{thetao\_join }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(}\FunctionTok{as.data.frame}\NormalTok{(ctd), }\FunctionTok{as.data.frame}\NormalTok{(thetao\_extract))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("geom", "date_match")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{thetao\_join}\SpecialCharTok{$}\NormalTok{thetao }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_join}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{sea bottom temperature\_mpi{-}esm\_05deg.tif}\StringTok{\textasciigrave{}}
+
+\CommentTok{\# the rows of sbt\_join differs from ctd and sbt\_extract due to the lack of Cruise and Station information in joining}
+
+\NormalTok{thetao\_join }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(ID, Cruise, Station, Year, Month, Day, sample\_date, Area\_27, date\_match, geom, depth\_m) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{thetao =} \FunctionTok{mean}\NormalTok{(thetao), }\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'ID', 'Cruise', 'Station', 'Year', 'Month',
+## 'Day', 'sample_date', 'Area_27', 'date_match', 'geom'. You can override using
+## the `.groups` argument.
+\end{verbatim}
+
+\hypertarget{correlation-test}{%
+\subparagraph{Correlation test}\label{correlation-test}}
+
+At CTD locations
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlation test }
+
+\CommentTok{\# all data}
+\FunctionTok{cor.test}\NormalTok{(thetao\_join}\SpecialCharTok{$}\NormalTok{temp\_degC, thetao\_join}\SpecialCharTok{$}\NormalTok{thetao) }\CommentTok{\#0.900 [95CI 0.900{-}0.902]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  thetao_join$temp_degC and thetao_join$thetao
+## t = 393.18, df = 36236, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8980872 0.9019978
+## sample estimates:
+##       cor 
+## 0.9000606
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# by ices division}
+\NormalTok{thetao\_4bc }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"4bc"}\NormalTok{)}
+\NormalTok{thetao\_7a }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{)}
+\NormalTok{thetao\_8ab }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{)}
+
+\FunctionTok{cor.test}\NormalTok{(thetao\_4bc}\SpecialCharTok{$}\NormalTok{temp\_degC, thetao\_4bc}\SpecialCharTok{$}\NormalTok{thetao) }\CommentTok{\#0.903 [95CI 0.901{-}0.905]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  thetao_4bc$temp_degC and thetao_4bc$thetao
+## t = 380.94, df = 32746, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.9012539 0.9052423
+## sample estimates:
+##       cor 
+## 0.9032676
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(thetao\_7a}\SpecialCharTok{$}\NormalTok{temp\_degC, thetao\_7a}\SpecialCharTok{$}\NormalTok{thetao)   }\CommentTok{\#0.86 [95CI 0.83{-}0.88]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  thetao_7a$temp_degC and thetao_7a$thetao
+## t = 37.691, df = 508, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8335380 0.8795345
+## sample estimates:
+##       cor 
+## 0.8582501
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(thetao\_8ab}\SpecialCharTok{$}\NormalTok{temp\_degC, thetao\_8ab}\SpecialCharTok{$}\NormalTok{thetao) }\CommentTok{\#0.38 [95CI 0.35{-}0.41]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  thetao_8ab$temp_degC and thetao_8ab$thetao
+## t = 22.467, df = 2978, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.3495671 0.4109837
+## sample estimates:
+##       cor 
+## 0.3806952
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot}
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ thetao\_join, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ thetao)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 11863 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 11863 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ thetao\_4bc, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ thetao)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 8300 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 8300 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-4-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ thetao\_7a, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ thetao)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 2102 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 2102 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-4-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ thetao\_8ab, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ thetao)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 1461 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 1461 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-4-4.pdf}
+
+8ab has poor correlation of CTD and ISIMIP thetao (0.38). One potential
+issue could be the record of CTD at high depth (\textgreater{} 200m)
+while the ISIMIP thetao was constructed at depth \textless{} 200. Thus,
+comparison should be confined to records under 200m only. In addition,
+sole main distribution is within depth under 200m.
+
+Reference sole distribution:
+
+\# Fishbase - 150m
+
+\# Grati et al 2013 (Adriatic Sea) - 100m
+
+\# Koutsikopoulos and Lacroix 1992 - survey spawning area (Bay of
+Biscay) - 100m
+
+\# Maxwell et al 2009 - survey data (Irish Sea) - 130m
+
+\# Pennino et al 2022 - survey data (Iberian water) - 200m
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{thetao\_8ab\_st200 }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_8ab }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(depth\_m }\SpecialCharTok{\textless{}} \DecValTok{200}\NormalTok{)}
+
+\FunctionTok{cor.test}\NormalTok{(thetao\_8ab\_st200}\SpecialCharTok{$}\NormalTok{temp\_degC, thetao\_8ab\_st200}\SpecialCharTok{$}\NormalTok{thetao) }\CommentTok{\#0.50 [95CI 0.46{-}0.53]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  thetao_8ab_st200$temp_degC and thetao_8ab_st200$thetao
+## t = 23.504, df = 1696, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.4589373 0.5307412
+## sample estimates:
+##       cor 
+## 0.4956858
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ thetao\_8ab\_st200, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ thetao)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =}\NormalTok{ depth\_m)) }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{scale\_color\_viridis}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 918 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 918 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+At locations at depth under 200m (excluding the CTD locations with NA
+depth), the correlation is much better: 0.50 {[}95CI 0.46-0.53{]}.
+However, it seems that thetao predicts higher temperature when CTD is
+within 10-15 degC.
+
+Monthly average
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# correlation test aggregation by month}
+\CommentTok{\# between monthly mean of ctd and monthly mean of isimip sbt}
+
+\NormalTok{thetao\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_rds}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_thetao, }\StringTok{"isimip\_sbt\_ices.rds"}\NormalTok{))}
+
+\NormalTok{thetao\_df }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_df }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Month =} \FunctionTok{month}\NormalTok{(Date),}
+         \AttributeTok{date\_match =} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"01"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, Month, }\StringTok{"{-}"}\NormalTok{, Year),}\AttributeTok{format =} \StringTok{"\%d{-}\%m{-}\%Y"}\NormalTok{), }
+         \AttributeTok{Area\_27 =}\NormalTok{ IcesArea) }
+
+\NormalTok{thetao\_join\_month }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_join }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(Area\_27, date\_match) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC, }\AttributeTok{na.ram =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'Area_27'. You can override using the
+## `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{thetao\_join\_month\_st200 }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_join }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(depth\_m }\SpecialCharTok{\textless{}=} \DecValTok{200}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\#only records with depth \textless{} 200m}
+  \FunctionTok{group\_by}\NormalTok{(Area\_27, date\_match) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC, }\AttributeTok{na.ram =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'Area_27'. You can override using the
+## `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{thetao\_join\_month }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(thetao\_join\_month, thetao\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("Area_27", "date_match")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{thetao\_join\_month\_st200 }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(thetao\_join\_month\_st200, thetao\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("Area_27", "date_match")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlation test}
+\FunctionTok{cor.test}\NormalTok{(thetao\_join\_month}\SpecialCharTok{$}\NormalTok{temp\_degC, thetao\_join\_month}\SpecialCharTok{$}\NormalTok{isimip\_sbt) }\CommentTok{\#0.86 [95CI 0.84{-}0.87]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  thetao_join_month$temp_degC and thetao_join_month$isimip_sbt
+## t = 43.361, df = 669, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8375706 0.8774659
+## sample estimates:
+##       cor 
+## 0.8588149
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{thetao\_month\_4bc }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_join\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"4bc"}\NormalTok{)}
+\NormalTok{thetao\_month\_7a }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_join\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{)}
+\NormalTok{thetao\_month\_8ab }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_join\_month\_st200 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{)}
+
+\FunctionTok{cor.test}\NormalTok{(thetao\_month\_4bc}\SpecialCharTok{$}\NormalTok{temp\_degC, thetao\_month\_4bc}\SpecialCharTok{$}\NormalTok{isimip\_sbt) }\CommentTok{\#0.85 [95CI 0.82{-}0.87]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  thetao_month_4bc$temp_degC and thetao_month_4bc$isimip_sbt
+## t = 31.392, df = 383, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8180355 0.8743859
+## sample estimates:
+##       cor 
+## 0.8486003
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(thetao\_month\_7a}\SpecialCharTok{$}\NormalTok{temp\_degC, thetao\_month\_7a}\SpecialCharTok{$}\NormalTok{isimip\_sbt)   }\CommentTok{\#0.90 [95CI 0.86{-}0.93]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  thetao_month_7a$temp_degC and thetao_month_7a$isimip_sbt
+## t = 23.771, df = 133, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8617456 0.9276503
+## sample estimates:
+##       cor 
+## 0.8997071
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(thetao\_month\_8ab}\SpecialCharTok{$}\NormalTok{temp\_degC, thetao\_month\_8ab}\SpecialCharTok{$}\NormalTok{isimip\_sbt) }\CommentTok{\#0.52 [95CI 0.36{-}0.65]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  thetao_month_8ab$temp_degC and thetao_month_8ab$isimip_sbt
+## t = 6.1997, df = 104, p-value = 1.158e-08
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.3648711 0.6461937
+## sample estimates:
+##       cor 
+## 0.5194708
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot}
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ thetao\_join\_month, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ isimip\_sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ thetao\_month\_4bc, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ isimip\_sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-6-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ thetao\_month\_7a, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ isimip\_sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-6-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ thetao\_month\_8ab, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ isimip\_sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-6-4.pdf}
+
+Very high correlation of CTD and ISIMIP thetao at the North Sea 0.85
+{[}95CI 0.82-0.87{]} and Irish Sea 0.90 {[}95CI 0.86-0.93{]} and
+moderate correlation at the Bay of Biscay 0.52 {[}95CI 0.36-0.65{]}
+
+\hypertarget{isimip-tob}{%
+\paragraph{3.2. ISIMIP TOB}\label{isimip-tob}}
+
+ISIMIP tob - potential sea bottom temperature. This is another dataset
+from ISIMIP
+
+\hypertarget{process-data-1}{%
+\subparagraph{Process data}\label{process-data-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# load data}
+
+\NormalTok{dir\_tob }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Env/Sea Bottom Temperature\_ISIMIP3b\_MPI{-}ESM1{-}2HR\_0.5deg\_1850{-}2100"}
+
+\NormalTok{file\_tob\_hist }\OtherTok{\textless{}{-}} \StringTok{"mpi{-}esm1{-}2{-}hr\_r1i1p1f1\_historical\_tob\_30arcmin\_global\_monthly\_1850\_2014.nc"}
+\NormalTok{file\_tob\_ssp126 }\OtherTok{\textless{}{-}} \StringTok{"mpi{-}esm1{-}2{-}hr\_r1i1p1f1\_ssp126\_tob\_30arcmin\_global\_monthly\_2015\_2100.nc"}
+
+\CommentTok{\# defnine bounding box}
+\FunctionTok{st\_bbox}\NormalTok{(ices\_area)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      xmin      ymin      xmax      ymax 
+## -8.746612 43.314507 12.005942 57.500000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bb }\OtherTok{=} \FunctionTok{st\_bbox}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\AttributeTok{xmin=}\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{, }\AttributeTok{ymin=}\DecValTok{42}\NormalTok{, }
+               \AttributeTok{xmax=}\DecValTok{13}\NormalTok{, }\AttributeTok{ymax=}\DecValTok{58}\NormalTok{),}
+             \AttributeTok{crs =} \FunctionTok{st\_crs}\NormalTok{(}\DecValTok{4326}\NormalTok{))}
+
+\CommentTok{\# read and crop file by bounding box}
+\NormalTok{tob\_hist }\OtherTok{\textless{}{-}} \FunctionTok{read\_ncdf}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_tob, file\_tob\_hist), }\AttributeTok{proxy =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## no 'var' specified, using tob
+\end{verbatim}
+
+\begin{verbatim}
+## other available variables:
+##  time, time_bnds, lon, lat
+\end{verbatim}
+
+\begin{verbatim}
+## No projection information found in nc file. 
+##  Coordinate variable units found to be degrees, 
+##  assuming WGS84 Lat/Lon.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tob\_hist }\OtherTok{=}\NormalTok{ tob\_hist[bb]}
+
+\NormalTok{tob\_ssp126 }\OtherTok{\textless{}{-}} \FunctionTok{read\_ncdf}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_tob, file\_tob\_ssp126), }\AttributeTok{proxy =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## no 'var' specified, using tob
+\end{verbatim}
+
+\begin{verbatim}
+## other available variables:
+##  time, time_bnds, lon, lat
+\end{verbatim}
+
+\begin{verbatim}
+## No projection information found in nc file. 
+##  Coordinate variable units found to be degrees, 
+##  assuming WGS84 Lat/Lon.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tob\_ssp126 }\OtherTok{=}\NormalTok{ tob\_ssp126[bb]}
+
+\CommentTok{\# merge tob\_hist and tob\_spp126}
+\NormalTok{tob }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(tob\_hist, tob\_ssp126)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Extract values of isimip sbt at ctd points}
+\CommentTok{\# Values of isimip sbt at certain year{-}month layer will be extracted at ctd point at that certain year{-}month}
+
+\CommentTok{\# however the time stamp of isimip sbt and ctd are different}
+\CommentTok{\# isimip sbt: date{-}time (around 15,16 of month)}
+\CommentTok{\# ctd point: sample date}
+\CommentTok{\# this difference leads to NA in extraction and conversion of time stamp is needed}
+\CommentTok{\# time stamp (for matching) of both data will be converted to 1st day of each month (eg. 01{-}01{-}1990) }
+
+\CommentTok{\# change time values isimip sbt}
+\CommentTok{\# hist}
+\NormalTok{year\_tob }\OtherTok{\textless{}{-}} \FunctionTok{year}\NormalTok{(}\FunctionTok{attr}\NormalTok{(tob, }\StringTok{"dimensions"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{time}\SpecialCharTok{$}\NormalTok{values)}
+\NormalTok{month\_tob }\OtherTok{\textless{}{-}} \FunctionTok{month}\NormalTok{(}\FunctionTok{attr}\NormalTok{(tob, }\StringTok{"dimensions"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{time}\SpecialCharTok{$}\NormalTok{values)}
+\NormalTok{date\_tob }\OtherTok{\textless{}{-}} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"01"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, month\_tob, }\StringTok{"{-}"}\NormalTok{, year\_tob),}\AttributeTok{format =} \StringTok{"\%d{-}\%m{-}\%Y"}\NormalTok{)}
+
+\FunctionTok{attr}\NormalTok{(tob, }\StringTok{"dimensions"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{time}\SpecialCharTok{$}\NormalTok{values }\OtherTok{\textless{}{-}}\NormalTok{ date\_tob}
+
+\CommentTok{\# change time ctd\_test}
+\NormalTok{ctd }\OtherTok{\textless{}{-}}\NormalTok{ ctd }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{date\_match =} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"01"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, Month, }\StringTok{"{-}"}\NormalTok{, Year),}\AttributeTok{format =} \StringTok{"\%d{-}\%m{-}\%Y"}\NormalTok{))}
+
+\NormalTok{tob\_extract }\OtherTok{\textless{}{-}} \FunctionTok{st\_extract}\NormalTok{(tob, ctd, }\AttributeTok{time\_column =} \StringTok{"date\_match"}\NormalTok{)}
+
+\CommentTok{\# joint with ctd data for comparison}
+\NormalTok{tob\_join }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(}\FunctionTok{as.data.frame}\NormalTok{(ctd), }\FunctionTok{as.data.frame}\NormalTok{(tob\_extract))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("geom", "date_match")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# the rows of sbt\_join differs from ctd and sbt\_extract due to the lack of Cruise and Station information in joining}
+\CommentTok{\# sbt\_join should be group\_by to have the correct rows}
+\NormalTok{tob\_join}\SpecialCharTok{$}\NormalTok{tob }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(tob\_join}\SpecialCharTok{$}\NormalTok{attr) }\CommentTok{\# convert tob from units to numeric to summarize}
+\NormalTok{tob\_join }\OtherTok{\textless{}{-}}\NormalTok{ tob\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(ID, Cruise, Station, Year, Month, Day, sample\_date, Area\_27, date\_match, geom, depth\_m) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{tob =} \FunctionTok{mean}\NormalTok{(tob), }\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'ID', 'Cruise', 'Station', 'Year', 'Month',
+## 'Day', 'sample_date', 'Area_27', 'date_match', 'geom'. You can override using
+## the `.groups` argument.
+\end{verbatim}
+
+\hypertarget{correlation-test-1}{%
+\subparagraph{Correlation test}\label{correlation-test-1}}
+
+At CTD locations
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlation test}
+
+\CommentTok{\# all data}
+\FunctionTok{cor.test}\NormalTok{(tob\_join}\SpecialCharTok{$}\NormalTok{temp\_degC, tob\_join}\SpecialCharTok{$}\NormalTok{tob) }\CommentTok{\#0.906 [95CI 0.905{-}0.908]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  tob_join$temp_degC and tob_join$tob
+## t = 408.38, df = 36235, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.9045174 0.9081932
+## sample estimates:
+##       cor 
+## 0.9063724
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# by ices division}
+\NormalTok{tob\_4bc }\OtherTok{\textless{}{-}}\NormalTok{ tob\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"4bc"}\NormalTok{)}
+\NormalTok{tob\_7a }\OtherTok{\textless{}{-}}\NormalTok{ tob\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{)}
+\NormalTok{tob\_8ab }\OtherTok{\textless{}{-}}\NormalTok{ tob\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{)}
+
+\FunctionTok{cor.test}\NormalTok{(tob\_4bc}\SpecialCharTok{$}\NormalTok{temp\_degC, tob\_4bc}\SpecialCharTok{$}\NormalTok{tob) }\CommentTok{\#0.910 [95CI 0.907{-}0.901]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  tob_4bc$temp_degC and tob_4bc$tob
+## t = 396.2, df = 32746, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.9077256 0.9114648
+## sample estimates:
+##       cor 
+## 0.9096136
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(tob\_7a}\SpecialCharTok{$}\NormalTok{temp\_degC, tob\_7a}\SpecialCharTok{$}\NormalTok{tob)   }\CommentTok{\#0.85 [95CI 0.82{-}0.87]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  tob_7a$temp_degC and tob_7a$tob
+## t = 35.666, df = 507, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8188514 0.8686575
+## sample estimates:
+##       cor 
+## 0.8455846
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(tob\_8ab}\SpecialCharTok{$}\NormalTok{temp\_degC, tob\_8ab}\SpecialCharTok{$}\NormalTok{tob) }\CommentTok{\#0.40 [95CI 0.36{-}0.42]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  tob_8ab$temp_degC and tob_8ab$tob
+## t = 23.469, df = 2978, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.3643369 0.4249530
+## sample estimates:
+##       cor 
+## 0.3950749
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot}
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ tob\_join, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ tob)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 11864 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 11864 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ tob\_4bc, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ tob)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 8300 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 8300 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-9-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ tob\_7a, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ tob)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 2103 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 2103 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-9-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ tob\_8ab, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ tob)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 1461 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 1461 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-9-4.pdf}
+
+Similar to ISIMIP thetao, CTD is highly correlated with ISIMIP tob in
+the North Sea and the Irish Sea but weakly correlated in the Bay of
+Biscay 0.40 {[}95CI 0.36-0.42{]}.
+
+Another test for CTD at depth under 200m in the Bay of Biscay is needed
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tob\_8ab\_st200 }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_8ab }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(depth\_m }\SpecialCharTok{\textless{}} \DecValTok{200}\NormalTok{)}
+
+\FunctionTok{cor.test}\NormalTok{(tob\_8ab\_st200}\SpecialCharTok{$}\NormalTok{temp\_degC, tob\_8ab\_st200}\SpecialCharTok{$}\NormalTok{thetao) }\CommentTok{\#0.50 [95CI 0.46{-}0.53]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  tob_8ab_st200$temp_degC and tob_8ab_st200$thetao
+## t = 23.504, df = 1696, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.4589373 0.5307412
+## sample estimates:
+##       cor 
+## 0.4956858
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ tob\_8ab\_st200, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ thetao)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =}\NormalTok{ depth\_m)) }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{scale\_color\_viridis}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 918 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 918 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+Monthly average
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# correlation test aggregation by month}
+\CommentTok{\# between monthly mean of ctd and monthly mean of isimip sbt}
+
+\NormalTok{tob\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_rds}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_tob, }\StringTok{"isimip\_sbt\_ices\_hist\_ssp126.rds"}\NormalTok{))}
+
+\NormalTok{tob\_df }\OtherTok{\textless{}{-}}\NormalTok{ tob\_df }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"4bc"}\NormalTok{, }\StringTok{"7a"}\NormalTok{, }\StringTok{"8ab"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Month =} \FunctionTok{month}\NormalTok{(Date),}
+         \AttributeTok{date\_match =} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"01"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, Month, }\StringTok{"{-}"}\NormalTok{, Year),}\AttributeTok{format =} \StringTok{"\%d{-}\%m{-}\%Y"}\NormalTok{), }
+         \AttributeTok{Area\_27 =}\NormalTok{ IcesArea,}
+         \AttributeTok{isimip\_sbt =} \FunctionTok{as.numeric}\NormalTok{(isimip\_sbt)) }
+
+\NormalTok{tob\_join\_month }\OtherTok{\textless{}{-}}\NormalTok{ tob\_join }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(Area\_27, date\_match) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC, }\AttributeTok{na.ram =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'Area_27'. You can override using the
+## `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tob\_join\_month\_st200 }\OtherTok{\textless{}{-}}\NormalTok{ tob\_join }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(depth\_m }\SpecialCharTok{\textless{}=} \DecValTok{200}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\#only records with depth \textless{} 200m}
+  \FunctionTok{group\_by}\NormalTok{(Area\_27, date\_match) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC, }\AttributeTok{na.ram =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'Area_27'. You can override using the
+## `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tob\_join\_month }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(tob\_join\_month, tob\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("Area_27", "date_match")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tob\_join\_month\_st200 }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(tob\_join\_month\_st200, tob\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("Area_27", "date_match")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlation test}
+\FunctionTok{cor.test}\NormalTok{(tob\_join\_month}\SpecialCharTok{$}\NormalTok{temp\_degC, tob\_join\_month}\SpecialCharTok{$}\NormalTok{isimip\_sbt) }\CommentTok{\#0.85 [95CI 0.83{-}0.87]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  tob_join_month$temp_degC and tob_join_month$isimip_sbt
+## t = 41.923, df = 669, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8287555 0.8706636
+## sample estimates:
+##       cor 
+## 0.8510593
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tob\_month\_4bc }\OtherTok{\textless{}{-}}\NormalTok{ tob\_join\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"4bc"}\NormalTok{)}
+\NormalTok{tob\_month\_7a }\OtherTok{\textless{}{-}}\NormalTok{ tob\_join\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{)}
+\NormalTok{tob\_month\_8ab }\OtherTok{\textless{}{-}}\NormalTok{ tob\_join\_month\_st200 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{)}
+
+\FunctionTok{cor.test}\NormalTok{(tob\_month\_4bc}\SpecialCharTok{$}\NormalTok{temp\_degC, tob\_month\_4bc}\SpecialCharTok{$}\NormalTok{isimip\_sbt) }\CommentTok{\#0.84 [95CI 0.81{-}0.87]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  tob_month_4bc$temp_degC and tob_month_4bc$isimip_sbt
+## t = 30.226, df = 383, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8071860 0.8666498
+## sample estimates:
+##       cor 
+## 0.8394123
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(tob\_month\_7a}\SpecialCharTok{$}\NormalTok{temp\_degC, tob\_month\_7a}\SpecialCharTok{$}\NormalTok{isimip\_sbt)   }\CommentTok{\#0.91 [95CI 0.88{-}0.94]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  tob_month_7a$temp_degC and tob_month_7a$isimip_sbt
+## t = 25.783, df = 133, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8795368 0.9372465
+## sample estimates:
+##      cor 
+## 0.912842
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(tob\_month\_8ab}\SpecialCharTok{$}\NormalTok{temp\_degC, tob\_month\_8ab}\SpecialCharTok{$}\NormalTok{isimip\_sbt) }\CommentTok{\#0.43 [95CI 0.26{-}0.57]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  tob_month_8ab$temp_degC and tob_month_8ab$isimip_sbt
+## t = 4.8556, df = 104, p-value = 4.247e-06
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.2604951 0.5736066
+## sample estimates:
+##      cor 
+## 0.429889
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot}
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ tob\_join\_month, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ isimip\_sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-11-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ tob\_month\_4bc, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ isimip\_sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-11-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ tob\_month\_7a, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ isimip\_sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-11-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ tob\_month\_8ab, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ isimip\_sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-11-4.pdf}
+
+The results are similar to that of monthly average ISIMIP thetao.
+However, ISIMIP tob has lower correlation with CTD in the Bay of Biscay
+0.43 {[}95CI 0.26-0.57{]}, compared to that of ISIMIP thetao 0.52
+{[}95CI 0.36-0.65{]}
+
+\hypertarget{hadisst}{%
+\paragraph{3.3. HADISST}\label{hadisst}}
+
+\hypertarget{correlation-test---monthly-average}{%
+\subparagraph{Correlation test - monthly
+average}\label{correlation-test---monthly-average}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlation test}
+
+\NormalTok{dir\_hadisst }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Env/Sea Surface Temperature\_HadISST\_1deg\_1870{-}2021"}
+\NormalTok{file\_hadisst }\OtherTok{\textless{}{-}} \StringTok{"haidsst\_ices.rds"}
+
+\NormalTok{hadisst\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_rds}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_hadisst, file\_hadisst))}
+
+\NormalTok{hadisst\_df }\OtherTok{\textless{}{-}}\NormalTok{ hadisst\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"4bc"}\NormalTok{, }\StringTok{"7a"}\NormalTok{, }\StringTok{"8ab"}\NormalTok{))}
+\NormalTok{hadisst\_df }\OtherTok{\textless{}{-}}\NormalTok{ hadisst\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Area\_27 =}\NormalTok{ IcesArea,}
+                              \AttributeTok{Month =} \FunctionTok{month}\NormalTok{(Date), }
+                              \AttributeTok{date\_match =} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"01"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, Month, }\StringTok{"{-}"}\NormalTok{, Year),}\AttributeTok{format =} \StringTok{"\%d{-}\%m{-}\%Y"}\NormalTok{))}
+
+\CommentTok{\# join }
+\NormalTok{hadisst\_join }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(}\FunctionTok{as.data.frame}\NormalTok{(ctd), hadisst\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("Year", "Month", "Area_27", "date_match")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{hadisst\_join\_month }\OtherTok{\textless{}{-}}\NormalTok{ hadisst\_join }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(Area\_27, date\_match) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC, }\AttributeTok{na.rm =}\NormalTok{ T),}
+            \AttributeTok{hadisst\_degC =} \FunctionTok{mean}\NormalTok{(hadisst\_degC, }\AttributeTok{na.rm =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'Area_27'. You can override using the
+## `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{hadisst\_join\_month\_st200 }\OtherTok{\textless{}{-}}\NormalTok{ hadisst\_join }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(depth\_m }\SpecialCharTok{\textless{}=} \DecValTok{200}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\#only records with depth \textless{} 200m}
+  \FunctionTok{group\_by}\NormalTok{(Area\_27, date\_match) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC, }\AttributeTok{na.ram =}\NormalTok{ T),}
+            \AttributeTok{hadisst\_degC =} \FunctionTok{mean}\NormalTok{(hadisst\_degC, }\AttributeTok{na.rm =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'Area_27'. You can override using the
+## `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlation test}
+\FunctionTok{cor.test}\NormalTok{(hadisst\_join\_month}\SpecialCharTok{$}\NormalTok{temp\_degC, hadisst\_join\_month}\SpecialCharTok{$}\NormalTok{hadisst\_degC) }\CommentTok{\#0.83 [95CI 0.81{-}0.86]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  hadisst_join_month$temp_degC and hadisst_join_month$hadisst_degC
+## t = 39.148, df = 669, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8097919 0.8559754
+## sample estimates:
+##       cor 
+## 0.8343419
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{hadisst\_month\_4bc }\OtherTok{\textless{}{-}}\NormalTok{ hadisst\_join\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"4bc"}\NormalTok{)}
+\NormalTok{hadisst\_month\_7a }\OtherTok{\textless{}{-}}\NormalTok{ hadisst\_join\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{)}
+\NormalTok{hadisst\_month\_8ab }\OtherTok{\textless{}{-}}\NormalTok{ hadisst\_join\_month\_st200 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{)}
+
+\FunctionTok{cor.test}\NormalTok{(hadisst\_month\_4bc}\SpecialCharTok{$}\NormalTok{temp\_degC, hadisst\_month\_4bc}\SpecialCharTok{$}\NormalTok{hadisst\_degC) }\CommentTok{\#0.85 [95CI 0.82{-}0.88]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  hadisst_month_4bc$temp_degC and hadisst_month_4bc$hadisst_degC
+## t = 31.65, df = 383, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8203213 0.8760122
+## sample estimates:
+##       cor 
+## 0.8505338
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(hadisst\_month\_7a}\SpecialCharTok{$}\NormalTok{temp\_degC, hadisst\_month\_7a}\SpecialCharTok{$}\NormalTok{hadisst\_degC)   }\CommentTok{\#0.93 [95CI 0.90{-}0.95]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  hadisst_month_7a$temp_degC and hadisst_month_7a$hadisst_degC
+## t = 28.746, df = 133, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.9003185 0.9483460
+## sample estimates:
+##       cor 
+## 0.9280978
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(hadisst\_month\_8ab}\SpecialCharTok{$}\NormalTok{temp\_degC, hadisst\_month\_8ab}\SpecialCharTok{$}\NormalTok{hadisst\_degC) }\CommentTok{\#0.56 [95CI 0.41{-}0.68]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  hadisst_month_8ab$temp_degC and hadisst_month_8ab$hadisst_degC
+## t = 6.8509, df = 104, p-value = 5.322e-10
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.4105545 0.6764391
+## sample estimates:
+##       cor 
+## 0.5576382
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(units)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## udunits database from C:/Users/tbui/AppData/Local/R/win-library/4.2/units/share/udunits/udunits2.xml
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ hadisst\_join\_month, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ hadisst\_degC)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ hadisst\_month\_4bc, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ hadisst\_degC)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-12-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ hadisst\_month\_7a, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ hadisst\_degC)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-12-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ hadisst\_month\_8ab, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ hadisst\_degC)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-12-4.pdf}
+
+HADISST showed higher correlation to CTD in the Bay of Biscay, compared
+to ISIMIP thetao and ISIMIP tob.
+
+However, besides good correlation, the temperature should have a good
+match in term of temperature range. Below we will explore that.
+
+\hypertarget{cmems-north-west-shelf}{%
+\paragraph{3.4. CMEMS NORTH WEST SHELF}\label{cmems-north-west-shelf}}
+
+\hypertarget{process-data-2}{%
+\subparagraph{Process data}\label{process-data-2}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# load data}
+
+\NormalTok{dir\_nws }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Env/Sea Bottom Temperature\_CMEMS\_Atlantic{-} European North West Shelf{-} Ocean Physics Reanalysis\_1993{-}2020"}
+\NormalTok{file\_nws }\OtherTok{\textless{}{-}} \StringTok{"cmems\_mod\_nws\_phy{-}bottomt\_my\_7km{-}2D\_P1M{-}m\_1677586068460.nc"}
+
+\NormalTok{nws }\OtherTok{\textless{}{-}} \FunctionTok{read\_ncdf}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_nws, file\_nws), }\AttributeTok{proxy =} \ConstantTok{TRUE}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## no 'var' specified, using bottomT
+\end{verbatim}
+
+\begin{verbatim}
+## other available variables:
+##  latitude, time, longitude
+\end{verbatim}
+
+\begin{verbatim}
+## No projection information found in nc file. 
+##  Coordinate variable units found to be degrees, 
+##  assuming WGS84 Lat/Lon.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Extract values of thetao at ctd points}
+\CommentTok{\# change time values thetao}
+\NormalTok{year\_nws }\OtherTok{\textless{}{-}} \FunctionTok{year}\NormalTok{(}\FunctionTok{attr}\NormalTok{(nws, }\StringTok{"dimensions"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{time}\SpecialCharTok{$}\NormalTok{values)}
+\NormalTok{month\_nws }\OtherTok{\textless{}{-}} \FunctionTok{month}\NormalTok{(}\FunctionTok{attr}\NormalTok{(nws, }\StringTok{"dimensions"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{time}\SpecialCharTok{$}\NormalTok{values)}
+\NormalTok{date\_nws }\OtherTok{\textless{}{-}} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"01"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, month\_nws, }\StringTok{"{-}"}\NormalTok{, year\_nws),}\AttributeTok{format =} \StringTok{"\%d{-}\%m{-}\%Y"}\NormalTok{)}
+
+\CommentTok{\# change band dimension to time dimension}
+\NormalTok{nws }\OtherTok{\textless{}{-}} \FunctionTok{st\_set\_dimensions}\NormalTok{(nws, }\DecValTok{3}\NormalTok{, }\AttributeTok{values =}\NormalTok{ date\_nws, }\AttributeTok{names =} \StringTok{"time"}\NormalTok{)}
+
+\CommentTok{\# change time ctd\_test}
+\NormalTok{ctd }\OtherTok{\textless{}{-}}\NormalTok{ ctd }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{date\_match =} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"01"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, Month, }\StringTok{"{-}"}\NormalTok{, Year),}\AttributeTok{format =} \StringTok{"\%d{-}\%m{-}\%Y"}\NormalTok{))}
+
+\CommentTok{\# extract }
+\NormalTok{nws\_extract }\OtherTok{\textless{}{-}} \FunctionTok{st\_extract}\NormalTok{(nws, ctd, }\AttributeTok{time\_column =} \StringTok{"date\_match"}\NormalTok{)}
+
+\CommentTok{\# joint with ctd data for comparison}
+\NormalTok{nws\_join }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(}\FunctionTok{as.data.frame}\NormalTok{(ctd), }\FunctionTok{as.data.frame}\NormalTok{(nws\_extract))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("geom", "date_match")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nws\_join}\SpecialCharTok{$}\NormalTok{nws\_sbt }\OtherTok{\textless{}{-}}\NormalTok{ nws\_join}\SpecialCharTok{$}\NormalTok{bottomT}
+
+\CommentTok{\# the rows of sbt\_join differs from ctd and sbt\_extract due to the lack of Cruise and Station information in joining}
+
+\NormalTok{nws\_join }\OtherTok{\textless{}{-}}\NormalTok{ nws\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(ID, Cruise, Station, Year, Month, Day, sample\_date, Area\_27, date\_match, geom, depth\_m) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{nws\_sbt =} \FunctionTok{mean}\NormalTok{(nws\_sbt), }\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'ID', 'Cruise', 'Station', 'Year', 'Month',
+## 'Day', 'sample_date', 'Area_27', 'date_match', 'geom'. You can override using
+## the `.groups` argument.
+\end{verbatim}
+
+\hypertarget{correlation-test-2}{%
+\subparagraph{Correlation test}\label{correlation-test-2}}
+
+At CTD locations
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlation test }
+
+\CommentTok{\# all data}
+\FunctionTok{cor.test}\NormalTok{(nws\_join}\SpecialCharTok{$}\NormalTok{temp\_degC, nws\_join}\SpecialCharTok{$}\NormalTok{nws\_sbt) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  nws_join$temp_degC and nws_join$nws_sbt
+## t = 695.46, df = 38317, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.9618554 0.9633255
+## sample estimates:
+##       cor 
+## 0.9625975
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# by ices division}
+\NormalTok{nws\_4bc }\OtherTok{\textless{}{-}}\NormalTok{ nws\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"4bc"}\NormalTok{)}
+\NormalTok{nws\_7a }\OtherTok{\textless{}{-}}\NormalTok{ nws\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{)}
+\NormalTok{nws\_8ab }\OtherTok{\textless{}{-}}\NormalTok{ nws\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{)}
+
+\FunctionTok{cor.test}\NormalTok{(nws\_4bc}\SpecialCharTok{$}\NormalTok{temp\_degC, nws\_4bc}\SpecialCharTok{$}\NormalTok{nws\_sbt) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  nws_4bc$temp_degC and nws_4bc$nws_sbt
+## t = 695.59, df = 33137, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.9667235 0.9681039
+## sample estimates:
+##       cor 
+## 0.9674209
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(nws\_7a}\SpecialCharTok{$}\NormalTok{temp\_degC, nws\_7a}\SpecialCharTok{$}\NormalTok{nws\_sbt)   }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  nws_7a$temp_degC and nws_7a$nws_sbt
+## t = 186.73, df = 1919, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.9711282 0.9758032
+## sample estimates:
+##       cor 
+## 0.9735674
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(nws\_8ab}\SpecialCharTok{$}\NormalTok{temp\_degC, nws\_8ab}\SpecialCharTok{$}\NormalTok{nws\_sbt) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  nws_8ab$temp_degC and nws_8ab$nws_sbt
+## t = 65.134, df = 3257, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.7368265 0.7666693
+## sample estimates:
+##       cor 
+## 0.7521332
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot}
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ nws\_join, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ nws\_sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 9782 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 9782 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ nws\_4bc, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ nws\_sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 7909 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 7909 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-14-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ nws\_7a, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ nws\_sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 691 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 691 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-14-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ nws\_8ab, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ nws\_sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 1182 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 1182 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-14-4.pdf}
+
+Very high correlation in the North Sea and the Irish Sea (0.96-0.97) and
+high correlation in the Bay of Biscay (0.75)
+
+Test correlation at CTD depth under 200m in the Bay of Biscay - improved
+correlation 0.86
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nws\_8ab\_st200 }\OtherTok{\textless{}{-}}\NormalTok{ nws\_8ab }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(depth\_m }\SpecialCharTok{\textless{}} \DecValTok{200}\NormalTok{)}
+
+\FunctionTok{cor.test}\NormalTok{(nws\_8ab\_st200}\SpecialCharTok{$}\NormalTok{temp\_degC, nws\_8ab\_st200}\SpecialCharTok{$}\NormalTok{nws\_sbt) }\CommentTok{\#0.86 [95CI 0.85{-}0.87]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  nws_8ab_st200$temp_degC and nws_8ab_st200$nws_sbt
+## t = 74.22, df = 1899, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8503561 0.8734416
+## sample estimates:
+##       cor 
+## 0.8623463
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ nws\_8ab\_st200, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ nws\_sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =}\NormalTok{ depth\_m)) }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{scale\_color\_viridis}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 715 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 715 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-15-1.pdf}
+
+Monthly average
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# correlation test aggregation by month}
+\CommentTok{\# between monthly mean of ctd and monthly mean of isimip sbt}
+
+\NormalTok{nws\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_rds}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_nws, }\StringTok{"cmems\_nws\_sbt\_ices.rds"}\NormalTok{))}
+
+\NormalTok{nws\_df }\OtherTok{\textless{}{-}}\NormalTok{ nws\_df }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"4bc"}\NormalTok{, }\StringTok{"7a"}\NormalTok{, }\StringTok{"8ab"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Month =} \FunctionTok{month}\NormalTok{(Date),}
+         \AttributeTok{date\_match =} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"01"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, Month, }\StringTok{"{-}"}\NormalTok{, Year),}\AttributeTok{format =} \StringTok{"\%d{-}\%m{-}\%Y"}\NormalTok{), }
+         \AttributeTok{Area\_27 =}\NormalTok{ IcesArea,}
+         \AttributeTok{sbt =} \FunctionTok{as.numeric}\NormalTok{(sbt)) }
+
+\NormalTok{nws\_join\_month }\OtherTok{\textless{}{-}}\NormalTok{ nws\_join }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(Area\_27, date\_match) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC, }\AttributeTok{na.ram =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'Area_27'. You can override using the
+## `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nws\_join\_month\_st200 }\OtherTok{\textless{}{-}}\NormalTok{ nws\_join }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(depth\_m }\SpecialCharTok{\textless{}=} \DecValTok{200}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\#only records with depth \textless{} 200m}
+  \FunctionTok{group\_by}\NormalTok{(Area\_27, date\_match) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC, }\AttributeTok{na.ram =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'Area_27'. You can override using the
+## `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nws\_join\_month }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(nws\_join\_month, nws\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("Area_27", "date_match")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nws\_join\_month\_st200 }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(nws\_join\_month\_st200, nws\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("Area_27", "date_match")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlation test}
+\FunctionTok{cor.test}\NormalTok{(nws\_join\_month}\SpecialCharTok{$}\NormalTok{temp\_degC, nws\_join\_month}\SpecialCharTok{$}\NormalTok{sbt) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  nws_join_month$temp_degC and nws_join_month$sbt
+## t = 50.7, df = 527, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8952436 0.9244280
+## sample estimates:
+##      cor 
+## 0.910969
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nws\_month\_4bc }\OtherTok{\textless{}{-}}\NormalTok{ nws\_join\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"4bc"}\NormalTok{)}
+\NormalTok{nws\_month\_7a }\OtherTok{\textless{}{-}}\NormalTok{ nws\_join\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{)}
+\NormalTok{nws\_month\_8ab }\OtherTok{\textless{}{-}}\NormalTok{ nws\_join\_month\_st200 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{)}
+
+\FunctionTok{cor.test}\NormalTok{(nws\_month\_4bc}\SpecialCharTok{$}\NormalTok{temp\_degC, nws\_month\_4bc}\SpecialCharTok{$}\NormalTok{sbt) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  nws_month_4bc$temp_degC and nws_month_4bc$sbt
+## t = 37.912, df = 314, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8839476 0.9239114
+## sample estimates:
+##       cor 
+## 0.9059268
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(nws\_month\_7a}\SpecialCharTok{$}\NormalTok{temp\_degC, nws\_month\_7a}\SpecialCharTok{$}\NormalTok{sbt)   }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  nws_month_7a$temp_degC and nws_month_7a$sbt
+## t = 29.03, df = 103, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.918493 0.961653
+## sample estimates:
+##       cor 
+## 0.9439774
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(nws\_month\_8ab}\SpecialCharTok{$}\NormalTok{temp\_degC, nws\_month\_8ab}\SpecialCharTok{$}\NormalTok{sbt) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  nws_month_8ab$temp_degC and nws_month_8ab$sbt
+## t = 8.0099, df = 76, p-value = 1.054e-11
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.5345269 0.7814546
+## sample estimates:
+##       cor 
+## 0.6765794
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot}
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ nws\_join\_month, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 142 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 142 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-16-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ nws\_month\_4bc, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 69 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 69 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-16-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ nws\_month\_7a, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 30 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 30 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-16-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ nws\_month\_8ab, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 28 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 28 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-16-4.pdf}
+
+Monthly average correlation CTD and CMEMS NWS: 0.68 {[}95CI 0.53-0.78{]}
+
+\hypertarget{cmems-iberian-biscay-irish}{%
+\paragraph{3.5. CMEMS IBERIAN BISCAY
+IRISH}\label{cmems-iberian-biscay-irish}}
+
+\hypertarget{process-data-3}{%
+\subparagraph{Process data}\label{process-data-3}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# load data}
+\NormalTok{dir\_ibi }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Env/Sea Bottom Temperature\_CMEMS\_Atlantic{-}Iberian Biscay Irish{-} Ocean Physics Reanalysis\_1993{-}2020"}
+\NormalTok{file\_ibi }\OtherTok{\textless{}{-}} \StringTok{"cmems\_mod\_ibi\_phy\_my\_0.083deg{-}3D\_P1M{-}m\_1677585944104.nc"}
+
+\NormalTok{ibi }\OtherTok{\textless{}{-}} \FunctionTok{read\_ncdf}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_ibi, file\_ibi), }\AttributeTok{proxy =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## no 'var' specified, using bottomT
+\end{verbatim}
+
+\begin{verbatim}
+## other available variables:
+##  latitude, time, longitude
+\end{verbatim}
+
+\begin{verbatim}
+## No projection information found in nc file. 
+##  Coordinate variable units found to be degrees, 
+##  assuming WGS84 Lat/Lon.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Extract values of thetao at ctd points}
+\CommentTok{\# change time values thetao}
+\NormalTok{year\_ibi }\OtherTok{\textless{}{-}} \FunctionTok{year}\NormalTok{(}\FunctionTok{attr}\NormalTok{(ibi, }\StringTok{"dimensions"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{time}\SpecialCharTok{$}\NormalTok{values)}
+\NormalTok{month\_ibi }\OtherTok{\textless{}{-}} \FunctionTok{month}\NormalTok{(}\FunctionTok{attr}\NormalTok{(ibi, }\StringTok{"dimensions"}\NormalTok{)}\SpecialCharTok{$}\NormalTok{time}\SpecialCharTok{$}\NormalTok{values)}
+\NormalTok{date\_ibi }\OtherTok{\textless{}{-}} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"01"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, month\_ibi, }\StringTok{"{-}"}\NormalTok{, year\_ibi),}\AttributeTok{format =} \StringTok{"\%d{-}\%m{-}\%Y"}\NormalTok{)}
+
+\CommentTok{\# change band dimension to time dimension}
+\NormalTok{ibi }\OtherTok{\textless{}{-}} \FunctionTok{st\_set\_dimensions}\NormalTok{(ibi, }\DecValTok{3}\NormalTok{, }\AttributeTok{values =}\NormalTok{ date\_ibi, }\AttributeTok{names =} \StringTok{"time"}\NormalTok{)}
+
+\CommentTok{\# change time ctd\_test}
+\NormalTok{ctd }\OtherTok{\textless{}{-}}\NormalTok{ ctd }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{date\_match =} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"01"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, Month, }\StringTok{"{-}"}\NormalTok{, Year),}\AttributeTok{format =} \StringTok{"\%d{-}\%m{-}\%Y"}\NormalTok{))}
+
+\CommentTok{\# extract }
+\NormalTok{ibi\_extract }\OtherTok{\textless{}{-}} \FunctionTok{st\_extract}\NormalTok{(ibi, ctd, }\AttributeTok{time\_column =} \StringTok{"date\_match"}\NormalTok{)}
+
+\CommentTok{\# joint with ctd data for comparison}
+\NormalTok{ibi\_join }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(}\FunctionTok{as.data.frame}\NormalTok{(ctd), }\FunctionTok{as.data.frame}\NormalTok{(ibi\_extract))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("geom", "date_match")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ibi\_join}\SpecialCharTok{$}\NormalTok{sbt }\OtherTok{\textless{}{-}}\NormalTok{ ibi\_join}\SpecialCharTok{$}\NormalTok{bottomT}
+
+\CommentTok{\# the rows of sbt\_join differs from ctd and sbt\_extract due to the lack of Cruise and Station information in joining}
+
+\NormalTok{ibi\_join }\OtherTok{\textless{}{-}}\NormalTok{ ibi\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(ID, Cruise, Station, Year, Month, Day, sample\_date, Area\_27, date\_match, geom, depth\_m) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{sbt =} \FunctionTok{mean}\NormalTok{(sbt), }\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'ID', 'Cruise', 'Station', 'Year', 'Month',
+## 'Day', 'sample_date', 'Area_27', 'date_match', 'geom'. You can override using
+## the `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# ibi data does not represent 4bc}
+\NormalTok{ibi\_join }\OtherTok{\textless{}{-}}\NormalTok{ ibi\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{!=} \StringTok{"4bc"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{correlation-test-3}{%
+\subparagraph{Correlation test}\label{correlation-test-3}}
+
+At CTD locations
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlation test }
+
+\CommentTok{\# all data}
+\FunctionTok{cor.test}\NormalTok{(ibi\_join}\SpecialCharTok{$}\NormalTok{temp\_degC, ibi\_join}\SpecialCharTok{$}\NormalTok{sbt) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  ibi_join$temp_degC and ibi_join$sbt
+## t = 182.22, df = 5021, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.9282856 0.9355556
+## sample estimates:
+##       cor 
+## 0.9320143
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# by ices division}
+
+\NormalTok{ibi\_7a }\OtherTok{\textless{}{-}}\NormalTok{ ibi\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{)}
+\NormalTok{ibi\_8ab }\OtherTok{\textless{}{-}}\NormalTok{ ibi\_join }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{)}
+
+\FunctionTok{cor.test}\NormalTok{(ibi\_7a}\SpecialCharTok{$}\NormalTok{temp\_degC, ibi\_7a}\SpecialCharTok{$}\NormalTok{sbt)   }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  ibi_7a$temp_degC and ibi_7a$sbt
+## t = 171.03, df = 1847, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.9670167 0.9724422
+## sample estimates:
+##       cor 
+## 0.9698493
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(ibi\_8ab}\SpecialCharTok{$}\NormalTok{temp\_degC, ibi\_8ab}\SpecialCharTok{$}\NormalTok{sbt) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  ibi_8ab$temp_degC and ibi_8ab$sbt
+## t = 88.329, df = 3172, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8328191 0.8529493
+## sample estimates:
+##       cor 
+## 0.8431795
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot}
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ibi\_join, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 2030 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 2030 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-18-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ibi\_7a, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 763 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 763 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-18-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ibi\_8ab, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 1267 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 1267 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-18-3.pdf}
+
+Very high correlation in the Irish Sea (0.97) and very high correlation
+in the Bay of Biscay (0.84) (compared to 0.73 in CMEMS NWS data)
+
+Test correlation at CTD depth under 200m in the Bay of Biscay - improved
+correlation 0.88 (no records of very low CTD \textless{} 10 degC)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ibi\_8ab\_st200 }\OtherTok{\textless{}{-}}\NormalTok{ ibi\_8ab }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(depth\_m }\SpecialCharTok{\textless{}} \DecValTok{200}\NormalTok{)}
+
+\FunctionTok{cor.test}\NormalTok{(ibi\_8ab\_st200}\SpecialCharTok{$}\NormalTok{temp\_degC, ibi\_8ab\_st200}\SpecialCharTok{$}\NormalTok{sbt) }\CommentTok{\#0.50 [95CI 0.46{-}0.53]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  ibi_8ab_st200$temp_degC and ibi_8ab_st200$sbt
+## t = 77.613, df = 1827, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8648340 0.8862014
+## sample estimates:
+##       cor 
+## 0.8759466
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ibi\_8ab\_st200, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =}\NormalTok{ depth\_m)) }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{scale\_color\_viridis}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 787 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 787 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-19-1.pdf}
+
+Monthly average
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# correlation test aggregation by month}
+\CommentTok{\# between monthly mean of ctd and monthly mean of isimip sbt}
+
+\NormalTok{ibi\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_rds}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_ibi, }\StringTok{"cmems\_ibi\_sbt\_ices.rds"}\NormalTok{))}
+
+\NormalTok{ibi\_df }\OtherTok{\textless{}{-}}\NormalTok{ ibi\_df }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"4bc"}\NormalTok{, }\StringTok{"7a"}\NormalTok{, }\StringTok{"8ab"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Month =} \FunctionTok{month}\NormalTok{(Date),}
+         \AttributeTok{date\_match =} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"01"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, Month, }\StringTok{"{-}"}\NormalTok{, Year),}\AttributeTok{format =} \StringTok{"\%d{-}\%m{-}\%Y"}\NormalTok{), }
+         \AttributeTok{Area\_27 =}\NormalTok{ IcesArea,}
+         \AttributeTok{sbt =} \FunctionTok{as.numeric}\NormalTok{(sbt)) }
+
+\NormalTok{ibi\_join\_month }\OtherTok{\textless{}{-}}\NormalTok{ ibi\_join }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(Area\_27, date\_match) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC, }\AttributeTok{na.ram =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'Area_27'. You can override using the
+## `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ibi\_join\_month\_st200 }\OtherTok{\textless{}{-}}\NormalTok{ ibi\_join }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(depth\_m }\SpecialCharTok{\textless{}=} \DecValTok{200}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \CommentTok{\#only records with depth \textless{} 200m}
+  \FunctionTok{group\_by}\NormalTok{(Area\_27, date\_match) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{temp\_degC =} \FunctionTok{mean}\NormalTok{(temp\_degC, }\AttributeTok{na.ram =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'Area_27'. You can override using the
+## `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ibi\_join\_month }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(ibi\_join\_month, ibi\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("Area_27", "date_match")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ibi\_join\_month\_st200 }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(ibi\_join\_month\_st200, ibi\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("Area_27", "date_match")
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlation test}
+\FunctionTok{cor.test}\NormalTok{(ibi\_join\_month}\SpecialCharTok{$}\NormalTok{temp\_degC, ibi\_join\_month}\SpecialCharTok{$}\NormalTok{sbt) }\CommentTok{\#0.85 [95CI 0.83{-}0.87]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  ibi_join_month$temp_degC and ibi_join_month$sbt
+## t = 28.769, df = 211, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.8616315 0.9170488
+## sample estimates:
+##       cor 
+## 0.8926653
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ibi\_month\_7a }\OtherTok{\textless{}{-}}\NormalTok{ ibi\_join\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{)}
+\NormalTok{ibi\_month\_8ab }\OtherTok{\textless{}{-}}\NormalTok{ ibi\_join\_month\_st200 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Area\_27 }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{)}
+
+\FunctionTok{cor.test}\NormalTok{(ibi\_month\_7a}\SpecialCharTok{$}\NormalTok{temp\_degC, ibi\_month\_7a}\SpecialCharTok{$}\NormalTok{sbt)   }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  ibi_month_7a$temp_degC and ibi_month_7a$sbt
+## t = 30.207, df = 103, p-value < 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.9241723 0.9643808
+## sample estimates:
+##       cor 
+## 0.9479292
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cor.test}\NormalTok{(ibi\_month\_8ab}\SpecialCharTok{$}\NormalTok{temp\_degC, ibi\_month\_8ab}\SpecialCharTok{$}\NormalTok{sbt) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's product-moment correlation
+## 
+## data:  ibi_month_8ab$temp_degC and ibi_month_8ab$sbt
+## t = 7.46, df = 76, p-value = 1.182e-10
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.4999771 0.7623951
+## sample estimates:
+##       cor 
+## 0.6501698
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot}
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ibi\_join\_month, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 73 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 73 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-20-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ibi\_month\_7a, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 30 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 30 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-20-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ibi\_month\_8ab, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ temp\_degC, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 28 rows containing non-finite values (`stat_smooth()`).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 28 rows containing missing values (`geom_point()`).
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-20-3.pdf}
+
+Monthly average correlation CTD and CMEMS NWS: 0.65 {[}95CI 0.50-0.76{]}
+
+\hypertarget{temperature-range}{%
+\paragraph{3.6. Temperature range}\label{temperature-range}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# LOAD DATA}
+
+\CommentTok{\# isimip thetao}
+\NormalTok{dir\_thetao }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Env/Sea Temperature\_ISIMIP3\_0.5deg\_1850{-}2014"}
+\NormalTok{thetao\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_rds}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_thetao, }\StringTok{"isimip\_sbt\_ices.rds"}\NormalTok{))}
+\NormalTok{thetao\_df }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_df }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{sbt =}\NormalTok{ isimip\_sbt,}
+         \AttributeTok{Month =} \FunctionTok{month}\NormalTok{(Date),}
+         \AttributeTok{DataSource =} \StringTok{"isimip thetao"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(IcesArea, sbt, Date, Month, Year, DataSource)}
+\NormalTok{thetao\_df }\OtherTok{\textless{}{-}}\NormalTok{ thetao\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Year }\SpecialCharTok{\textgreater{}} \DecValTok{1960}\NormalTok{, Year }\SpecialCharTok{\textless{}} \DecValTok{2022}\NormalTok{)}
+
+\CommentTok{\# isimip tob}
+\NormalTok{dir\_tob }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Env/Sea Bottom Temperature\_ISIMIP3b\_MPI{-}ESM1{-}2HR\_0.5deg\_1850{-}2100"}
+\NormalTok{tob\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_rds}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_tob, }\StringTok{"isimip\_sbt\_ices\_hist\_ssp126.rds"}\NormalTok{))}
+\NormalTok{tob\_df }\OtherTok{\textless{}{-}}\NormalTok{ tob\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{sbt =} \FunctionTok{as.numeric}\NormalTok{(isimip\_sbt),}
+                            \AttributeTok{Month =} \FunctionTok{month}\NormalTok{(Date),}
+                            \AttributeTok{DataSource =} \StringTok{"isimip tob"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(IcesArea, sbt, Date, Month, Year, DataSource)}
+\NormalTok{tob\_df }\OtherTok{\textless{}{-}}\NormalTok{ tob\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Year }\SpecialCharTok{\textgreater{}} \DecValTok{1960}\NormalTok{, Year }\SpecialCharTok{\textless{}} \DecValTok{2022}\NormalTok{)}
+
+
+\CommentTok{\# hadisst}
+\NormalTok{dir\_hadisst }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Env/Sea Surface Temperature\_HadISST\_1deg\_1870{-}2021"}
+\NormalTok{hadisst\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_rds}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_hadisst, }\StringTok{"haidsst\_ices.rds"}\NormalTok{))}
+\NormalTok{hadisst\_df }\OtherTok{\textless{}{-}}\NormalTok{ hadisst\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{sbt =}\NormalTok{ hadisst\_degC,}
+                                    \AttributeTok{Month =} \FunctionTok{month}\NormalTok{(Date),}
+                                    \AttributeTok{DataSource =} \StringTok{"hadisst"}\NormalTok{)  }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(IcesArea, sbt, Date, Month, Year, DataSource)}
+\NormalTok{hadisst\_df }\OtherTok{\textless{}{-}}\NormalTok{ hadisst\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Year }\SpecialCharTok{\textgreater{}} \DecValTok{1960}\NormalTok{, Year }\SpecialCharTok{\textless{}} \DecValTok{2022}\NormalTok{)}
+
+\CommentTok{\# cmems nws}
+\NormalTok{dir\_nws }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Env/Sea Bottom Temperature\_CMEMS\_Atlantic{-} European North West Shelf{-} Ocean Physics Reanalysis\_1993{-}2020"}
+\NormalTok{nws\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_rds}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_nws, }\StringTok{"cmems\_nws\_sbt\_ices.rds"}\NormalTok{))}
+\NormalTok{nws\_df }\OtherTok{\textless{}{-}}\NormalTok{ nws\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Month =} \FunctionTok{month}\NormalTok{(Date))}
+
+\CommentTok{\# cmems ibi}
+\NormalTok{dir\_ibi }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Env/Sea Bottom Temperature\_CMEMS\_Atlantic{-}Iberian Biscay Irish{-} Ocean Physics Reanalysis\_1993{-}2020"}
+\NormalTok{ibi\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_rds}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_ibi, }\StringTok{"cmems\_ibi\_sbt\_ices.rds"}\NormalTok{))}
+\NormalTok{ibi\_df }\OtherTok{\textless{}{-}}\NormalTok{ ibi\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Month =} \FunctionTok{month}\NormalTok{(Date))}
+
+\CommentTok{\# cmems glo }
+\NormalTok{dir\_glo }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Env/Sea Bottom Temperature\_CMEMS\_Global Ocean Physics Reanalysis\_1993{-}2020"}
+\NormalTok{glo\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_rds}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_glo, }\StringTok{"cmems\_glo\_sbt\_ices.rds"}\NormalTok{))}
+\NormalTok{glo\_df }\OtherTok{\textless{}{-}}\NormalTok{ glo\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Month =} \FunctionTok{month}\NormalTok{(Date))}
+
+\CommentTok{\# merge all modeled data}
+\NormalTok{sbt }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(thetao\_df, tob\_df, hadisst\_df, nws\_df, ibi\_df, glo\_df)}
+\NormalTok{sbt }\OtherTok{\textless{}{-}}\NormalTok{ sbt }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"4bc"}\NormalTok{, }\StringTok{"7a"}\NormalTok{, }\StringTok{"8ab"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{temporal-trend-modeled-data}{%
+\subparagraph{Temporal trend modeled
+data}\label{temporal-trend-modeled-data}}
+
+Monthly plot
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Month}
+\NormalTok{sbt\_month }\OtherTok{\textless{}{-}}\NormalTok{ sbt }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(DataSource, IcesArea, Month) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{sbt =} \FunctionTok{mean}\NormalTok{(sbt, }\AttributeTok{na.rm =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'DataSource', 'IcesArea'. You can override
+## using the `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sbt\_month, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Month, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-22-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sbt\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"4bc"}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Month, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-22-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sbt\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Month, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-22-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sbt\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Month, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-22-4.pdf}
+
+Yearly plot
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Year}
+\NormalTok{sbt\_year }\OtherTok{\textless{}{-}}\NormalTok{ sbt }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(DataSource, IcesArea, Year) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{sbt =} \FunctionTok{mean}\NormalTok{(sbt, }\AttributeTok{na.rm =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'DataSource', 'IcesArea'. You can override
+## using the `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sbt\_year }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"4bc"}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Year, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea) }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{se =}\NormalTok{ F)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-23-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sbt\_year }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Year, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea) }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{se =}\NormalTok{ F)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-23-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sbt\_year }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Year, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea) }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{se =}\NormalTok{ F)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-23-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sbt\_year }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"4bc"}\NormalTok{, DataSource }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"isimip thetao"}\NormalTok{, }\StringTok{"cmems ibi"}\NormalTok{, }\StringTok{"cmems nws"}\NormalTok{)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Year, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea) }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{se =}\NormalTok{ F)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-23-4.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sbt\_year }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{, DataSource }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"isimip thetao"}\NormalTok{, }\StringTok{"cmems ibi"}\NormalTok{, }\StringTok{"cmems nws"}\NormalTok{)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Year, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea) }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{se =}\NormalTok{ F)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-23-5.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sbt\_year }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{, DataSource }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"isimip thetao"}\NormalTok{, }\StringTok{"cmems ibi"}\NormalTok{, }\StringTok{"cmems nws"}\NormalTok{)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Year, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea) }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{se =}\NormalTok{ F)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-23-6.pdf}
+
+\hypertarget{comparison-at-ctd-points}{%
+\subparagraph{Comparison at CTD points}\label{comparison-at-ctd-points}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Process data}
+\NormalTok{dir\_ctd }\OtherTok{\textless{}{-}} \StringTok{"D:/OneDrive {-} UGent/data/Env/Sea Bottom Temperature\_ICES CTD\_1970{-}2020"}
+\NormalTok{ctd\_df }\OtherTok{\textless{}{-}} \FunctionTok{as\_tibble}\NormalTok{(}\FunctionTok{read\_sf}\NormalTok{(}\FunctionTok{file.path}\NormalTok{(dir\_ctd, }\StringTok{"ices\_ctd\_sea{-}bottom{-}temperature.gpkg"}\NormalTok{)))}
+
+\CommentTok{\# summarize ctd by year and month}
+\NormalTok{ctd\_df }\OtherTok{\textless{}{-}}\NormalTok{ ctd\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{IcesArea =}\NormalTok{ Area\_27) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(IcesArea, Year, Month) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{ctd\_sbt =} \FunctionTok{mean}\NormalTok{(temp\_degC, }\AttributeTok{na.rm =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'IcesArea', 'Year'. You can override using
+## the `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ctd\_df }\OtherTok{\textless{}{-}}\NormalTok{ ctd\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"4bc"}\NormalTok{, }\StringTok{"7a"}\NormalTok{, }\StringTok{"8ab"}\NormalTok{))}
+
+\CommentTok{\# join ctd\_df and sbt (to get modeled data at CTD points)}
+\NormalTok{ctd\_df }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(ctd\_df, sbt)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Joining, by = c("IcesArea", "Year", "Month")
+\end{verbatim}
+
+\hypertarget{scatter-plot}{%
+\subparagraph{Scatter plot}\label{scatter-plot}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ctd\_df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ctd\_sbt, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{facet\_grid}\NormalTok{(IcesArea }\SpecialCharTok{\textasciitilde{}}\NormalTok{ DataSource)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-25-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ctd\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ctd\_sbt, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{facet\_grid}\NormalTok{(IcesArea }\SpecialCharTok{\textasciitilde{}}\NormalTok{ DataSource) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-25-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ctd\_df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(DataSource }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"isimip thetao"}\NormalTok{, }\StringTok{"cmems ibi"}\NormalTok{, }\StringTok{"cmems nws"}\NormalTok{)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ctd\_sbt, }\AttributeTok{y =}\NormalTok{ sbt)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{facet\_grid}\NormalTok{(IcesArea }\SpecialCharTok{\textasciitilde{}}\NormalTok{ DataSource)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-25-3.pdf}
+
+CTD 8ab is mainly within 10-15 degC, which fits better the range of
+ISIMIP thetao and CMEMS ibi (10-13 degC)
+
+\hypertarget{monthly-plot-1}{%
+\subparagraph{Monthly plot}\label{monthly-plot-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ctd\_month\_modeled }\OtherTok{\textless{}{-}}\NormalTok{ ctd\_df }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(DataSource, IcesArea, Month) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{sbt =} \FunctionTok{mean}\NormalTok{(sbt, }\AttributeTok{na.rm =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'DataSource', 'IcesArea'. You can override
+## using the `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ctd\_month\_ctd }\OtherTok{\textless{}{-}}\NormalTok{ ctd\_df }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(IcesArea, Month) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{sbt =} \FunctionTok{mean}\NormalTok{(ctd\_sbt, }\AttributeTok{na.rm =}\NormalTok{ T)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{DataSource =} \StringTok{"ices ctd"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'IcesArea'. You can override using the
+## `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ctd\_month }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(ctd\_month\_modeled, ctd\_month\_ctd)}
+
+\CommentTok{\# plot}
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ctd\_month, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Month, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-26-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ctd\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"4bc"}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Month, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-26-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ctd\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Month, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-26-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ctd\_month }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Month, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-26-4.pdf}
+
+\hypertarget{yearly-plot-1}{%
+\subparagraph{Yearly plot}\label{yearly-plot-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ctd\_year\_modeled }\OtherTok{\textless{}{-}}\NormalTok{ ctd\_df }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(DataSource, IcesArea, Year) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{sbt =} \FunctionTok{mean}\NormalTok{(sbt, }\AttributeTok{na.rm =}\NormalTok{ T))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'DataSource', 'IcesArea'. You can override
+## using the `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ctd\_year\_ctd }\OtherTok{\textless{}{-}}\NormalTok{ ctd\_df }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{group\_by}\NormalTok{(IcesArea, Year) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{sbt =} \FunctionTok{mean}\NormalTok{(ctd\_sbt, }\AttributeTok{na.rm =}\NormalTok{ T)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{DataSource =} \StringTok{"ices ctd"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` has grouped output by 'IcesArea'. You can override using the
+## `.groups` argument.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ctd\_year }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(ctd\_year\_modeled, ctd\_year\_ctd)}
+
+\CommentTok{\# plot}
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ctd\_year }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"4bc"}\NormalTok{, }\SpecialCharTok{!}\NormalTok{DataSource }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"isimip tob"}\NormalTok{, }\StringTok{"hadisst"}\NormalTok{)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Year, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-27-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ctd\_year }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{, }\SpecialCharTok{!}\NormalTok{DataSource }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"isimip tob"}\NormalTok{, }\StringTok{"hadisst"}\NormalTok{)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Year, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-27-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ctd\_year }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{, }\SpecialCharTok{!}\NormalTok{DataSource }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"isimip tob"}\NormalTok{, }\StringTok{"hadisst"}\NormalTok{)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Year, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-27-3.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ctd\_year }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"4bc"}\NormalTok{, DataSource }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"ices ctd"}\NormalTok{, }\StringTok{"cmems ibi"}\NormalTok{, }\StringTok{"cmems nws"}\NormalTok{, }\StringTok{"isimip thetao"}\NormalTok{)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Year, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-27-4.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ctd\_year }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"7a"}\NormalTok{, DataSource }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"ices ctd"}\NormalTok{, }\StringTok{"cmems ibi"}\NormalTok{, }\StringTok{"cmems nws"}\NormalTok{, }\StringTok{"isimip thetao"}\NormalTok{)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Year, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-27-5.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ctd\_year }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{, DataSource }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"ices ctd"}\NormalTok{, }\StringTok{"cmems ibi"}\NormalTok{, }\StringTok{"cmems nws"}\NormalTok{, }\StringTok{"isimip thetao"}\NormalTok{)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Year, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-27-6.pdf}
+
+Both monthly and yearly plots show that ISIMIP thetao and CMEMS ibi have
+the closest match to the CTD temperature.
+
+\hypertarget{conclusion}{%
+\paragraph{5. Conclusion}\label{conclusion}}
+
+Among the examined datasets:
+
+\begin{itemize}
+\item
+  ISIMIP thetao, ISIMIP tob
+\item
+  HADISST
+\item
+  CMEMS nws, CMEMS ibi, CMEMS glo
+\end{itemize}
+
+\textbf{ISIMIP thetao and CMEMS ibi have the closest match to the CTD in
+situ temperature}
+
+In the North Sea and the Irish Sea, both ISIMIP thetao and CMEMS ibi
+show very good match in correlation test and monthly, yearly range.
+ISIMIP thetao has the advantage of wider temporal coverage.
+
+In the Bay of Biscay, CMEMS ibi shows improved correlation compared to
+ISIMIP thetao at both CTD locations (0.84-0.88 vs 0.38-0.5) and at
+monthly average (0.65 vs 0.52).
+
+\textbf{Data used to represent Sea Bottom Temperature:}
+
+\begin{itemize}
+\item
+  \textbf{North Sea: ISIMIP thetao}
+\item
+  \textbf{Irish Sea: ISIMIP thetao}
+\item
+  \textbf{Bay of Biscay: CMEMS ibi}
+\end{itemize}
+
+There are 2 concerns to be addressed:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  The different temporal trend of CMEMS ibi and ISIMIP thetao
+\item
+  The lack of temporal coverage of CMEMS ibi (dated back to 1993 only
+  while otolith data can be dated back to 1980s)
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ sbt\_year }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(IcesArea }\SpecialCharTok{==} \StringTok{"8ab"}\NormalTok{, DataSource }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"isimip thetao"}\NormalTok{, }\StringTok{"cmems ibi"}\NormalTok{, }\StringTok{"cmems nws"}\NormalTok{)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Year, }\AttributeTok{y =}\NormalTok{ sbt, }\AttributeTok{color =}\NormalTok{ DataSource)) }\SpecialCharTok{+} \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ IcesArea) }\SpecialCharTok{+} \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{se =}\NormalTok{ F)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{si_sbt_in-situ-ctd-vs-modeled-temperature_files/figure-latex/unnamed-chunk-28-1.pdf}
+
+\end{document}

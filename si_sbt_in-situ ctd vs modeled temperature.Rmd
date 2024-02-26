@@ -1,0 +1,434 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Compare ICES CTD data and ISIMIP, ORAS5, CMEMS NWS, NEMO MEDUSA Potential Sea Temperature at floor, and HADISST sea surface temperature
+
+# 1. SETUP
+```{r message=FALSE, warning=FALSE}
+# load packages
+library(tidyverse)  # process dataframe
+library(lubridate)  # process date time 
+library(readr)      # read csv
+library(sf)         # process GIS files
+library(stars)      # process raster files
+library(viridis)    # color scale
+library(tmap)       # plot map
+library(patchwork)
+
+# working directories
+dir_gis <- "./data/admin"
+dir_temp <- "./data/temp"
+
+```
+
+# 2. READ DATA
+## ices area
+```{r}
+## ICES AREA
+ices_area <- read_sf(file.path(dir_gis, "ices_areas_sub_group_4abc_4326_new.gpkg")) ##"ices_areas_sub_group_4326_new.gpkg"
+ices_area <- ices_area %>% 
+  mutate(IcesArea = Area_27) %>%
+  filter(IcesArea %in% c("7a", "8ab", "4abc")) 
+
+#### plot 
+#tm_shape(ices_area) + tm_borders()
+```
+
+## ctd
+```{r}
+## CTD
+ctd <- read_sf(file.path(dir_temp, "ices_ctd_sea-bottom-temperature.gpkg"))
+ctd <- ctd %>% 
+  mutate(IcesArea = Area_27) %>%
+  filter(IcesArea %in% c("7a", "8ab", "4abc")) %>%
+  mutate(ctd = temp_degC, 
+         date_match = as.Date(paste0("01", "-", Month, "-", Year),format = "%d-%m-%Y"))
+
+# plot 
+p1 <- tm_shape(ctd %>% filter(Year == 1972),
+               bbox = st_bbox(ices_area)) + 
+  tm_dots() +
+  tm_shape(ices_area) + 
+  tm_borders() +
+  tm_layout(panel.labels = "1972")
+
+p2 <- tm_shape(ctd %>% filter(Year == 1980), 
+         bbox = st_bbox(ices_area)) +  
+  tm_dots() +
+  tm_shape(ices_area) + 
+  tm_borders() +
+  tm_layout(panel.labels = "1980")
+
+p3 <- tm_shape(ctd %>% filter(Year == 2000), 
+         bbox = st_bbox(ices_area)) +  
+  tm_dots() +
+  tm_shape(ices_area) + 
+  tm_borders() + 
+  tm_layout(panel.labels = "2000")
+
+p4 <- tm_shape(ctd %>% filter(Year == 2020), 
+         bbox = st_bbox(ices_area)) + 
+  tm_dots() +
+  tm_shape(ices_area) + 
+  tm_borders() + 
+  tm_layout(panel.labels = "2020")
+
+tmap_arrange(p1, p2, p3, p4)
+```
+
+## temp raster
+```{r}
+## TEMP RASTER 
+isimip <- read_stars(file.path(dir_temp, "isimip_sbt_hist_ssp585.tif"))
+oras <- read_stars(file.path(dir_temp, "oras5.tif"))
+nm <- read_stars(file.path(dir_temp, "nemomedusa.tif"))
+
+## make sure everything has the same crs
+st_crs(isimip) = st_crs(oras) = st_crs(nm) = st_crs(ctd)
+```
+
+```{r message=FALSE, warning=FALSE}
+## plot raster (bounded by bbox ices_div) 
+# ctd in year 2000
+# raster in 01.2000
+
+## setup
+# bounding box
+bb <- st_bbox(ices_area)
+breaks = c(0, 6, 7, 8, 9, 10, 12, 16)
+
+## plot
+p1 <- tm_shape(isimip[,,,1801][bb]) +
+  tm_raster(title = '',
+            palette = "-RdYlBu", 
+            breaks = breaks,
+            midpoint = NA) +
+  #tm_shape(ctd %>% filter(Year == 2000)) + 
+  #tm_dots(alpha = 0.2) +
+  tm_shape(ices_area) + 
+  tm_borders() +
+  tm_layout(legend.position = c("right", "bottom"),
+            panel.labels = "isimip",
+            legend.text.size = 0.5)
+
+# oras5
+p2 <- tm_shape(oras[,,,301][bb]) +
+  tm_raster(title = '',
+            palette = "-RdYlBu", 
+            breaks = breaks,
+            midpoint = NA) +
+  #tm_shape(ctd %>% filter(Year == 2000)) + 
+  #tm_dots(alpha = 0.2) +
+  tm_shape(ices_area) + 
+  tm_borders() +
+  tm_layout(legend.position = c("right", "bottom"),
+            panel.labels = "oras5",
+            legend.text.size = 0.5)
+
+
+# nemo medusa (1st layer is bathy)
+p3 <- tm_shape(nm[,,,22][bb]) +
+  tm_raster(title = '',
+            palette = "-RdYlBu", 
+            breaks = breaks,
+            midpoint = NA) +
+  #tm_shape(ctd %>% filter(Year == 2000)) + 
+  #tm_dots(alpha = 0.2) +
+  tm_shape(ices_area) + 
+  tm_borders() +
+  tm_layout(legend.position = c("right", "bottom"),
+            panel.labels = "nemo-medusa",
+            legend.text.size = 0.5)
+
+## all plots together
+tmap_arrange(p1, p2, p3)
+```
+
+```{r}
+## there are ctd points that do not intersect with isimip
+bb <- st_bbox(ices_area %>% filter(Area_27 == "4abc"))
+
+p1 <- tm_shape(isimip[,,,1801][bb]) +
+  tm_raster(title = '',
+            palette = "-RdYlBu", 
+            breaks = breaks) +
+  tm_shape(ctd %>% filter(Year == 2000, Month == 1, Day == 23)) + 
+  tm_dots(alpha = 0.5, size = 0.05) +
+  tm_shape(ices_area) + 
+  tm_borders() +
+  tm_layout(legend.position = c("right", "bottom"),
+            panel.labels = "ctd 23/01/2000 vs isimip 01/2000",
+            legend.text.size = 0.5)
+
+p2 <- tm_shape(isimip[,,,1801][bb]) +
+  tm_raster(title = '',
+            palette = "-RdYlBu", 
+            breaks = breaks) +
+  tm_shape(ctd %>% filter(Year == 2000, Month == 1, Day == 24)) + 
+  tm_dots(alpha = 0.5, size = 0.05) +
+  tm_shape(ices_area) + 
+  tm_borders() +
+  tm_layout(legend.position = c("right", "bottom"),
+            panel.labels = "ctd 24/01/2000 vs isimip 01/2000",
+            legend.text.size = 0.5)
+
+tmap_arrange(p1, p2)
+```
+
+# 4. PROCESS RASTER
+
+## process raster
+```{r}
+#### isimip
+## change attribute name to temp
+isimip <- setNames(isimip, c("temp"))
+
+## change band dimension to time dimension
+# get date values from band$values
+year <- str_sub(attr(isimip, "dimensions")$band$values, start = 1, end = 4)
+month <- str_sub(attr(isimip, "dimensions")$band$values, start = 6, end = 7)
+date <- as.Date(paste0("01", "-", month, "-", year),format = "%d-%m-%Y")
+
+isimip <- st_set_dimensions(isimip, 3, values = date, names = "time")
+```
+
+```{r}
+#### oras5
+## change attribute name to temp
+oras <- setNames(oras, c("temp"))
+
+## change band dimension to time dimension
+# get date values from band$values
+year <- str_sub(attr(oras, "dimensions")$band$values, start = 1, end = 4)
+month <- str_sub(attr(oras, "dimensions")$band$values, start = 6, end = 7)
+date <- as.Date(paste0("01", "-", month, "-", year),format = "%d-%m-%Y")
+
+oras <- st_set_dimensions(oras, 3, values = date, names = "time")
+```
+
+```{r}
+#### nemomedusa
+## remove 1st layer bathy
+nm <- nm[,,,2:517]
+
+## change attribute name to temp
+nm <- setNames(nm, c("temp"))
+
+## change band dimension to time dimension
+# get date values from band$values
+year <- str_sub(attr(nm, "dimensions")$band$values, start = 7, end = 10)
+month <- str_sub(attr(nm, "dimensions")$band$values, start = 11, end = 12)
+date <- as.Date(paste0("01", "-", month, "-", year),format = "%d-%m-%Y")
+
+nm <- st_set_dimensions(nm, 3, values = date, names = "time")
+```
+
+## extract ctd values
+```{r}
+## extract raster values at ctd points 
+isimip_extract <- st_extract(isimip, ctd, time_column = "date_match")
+oras_extract <-  st_extract(oras, ctd, time_column = "date_match")
+nm_extract <- st_extract(nm, ctd, time_column = "date_match")
+```
+
+```{r message=FALSE, warning=FALSE}
+## join ctd and raster extracted values
+# isimip
+isimip_ctd <- left_join(as.data.frame(ctd), 
+                        as.data.frame(isimip_extract),
+                        by = join_by(geom, date_match)) %>%
+  unique() %>%
+  mutate(source = "isimip")
+
+# oras5
+oras_ctd <- left_join(as.data.frame(ctd), 
+                        as.data.frame(oras_extract),
+                        by = join_by(geom, date_match)) %>%
+  unique() %>%
+  mutate(source = "oras5")
+
+# nemo-medusa
+nm_ctd <- left_join(as.data.frame(ctd), 
+                        as.data.frame(nm_extract),
+                        by = join_by(geom, date_match)) %>%
+  unique() %>%
+  mutate(source = "nemo-medusa")
+```
+
+```{r}
+## combine all  
+temp_ctd <- rbind(isimip_ctd, oras_ctd, nm_ctd)
+```
+
+## temperature vs ctd correlation
+
+### all time series
+```{r}
+## get list of source and area
+source_list <- unique(temp_ctd$source)
+area_list <- unique(temp_ctd$IcesArea)
+```
+
+```{r message=FALSE, warning=FALSE}
+## extract correlation at ctd locations
+temp_ctd_cor <- tibble()
+for (s in 1:length(source_list)) {
+  for (i in 1:length(area_list)) {
+    ## note
+    #print(paste("processing", source[s], ices_area[i]))
+    
+    ## subset temp_ctd
+    temp_ctd_sub <- temp_ctd %>% filter(is.na(temp) == F,
+                                    source == source_list[s],
+                                    IcesArea == area_list[i] 
+                                    )
+    
+    ## linear regression
+    lm <- lm(temp ~ ctd, data = temp_ctd_sub)
+    
+    ## df with r_squared
+    df_temp <- tibble(source = source_list[s],
+                      ices_area = area_list[i],
+                      r_squared = round(summary(lm)$adj.r.squared, 2))
+    
+    temp_ctd_cor <- bind_rows(temp_ctd_cor, df_temp)
+
+  }
+}
+```
+
+```{r message=FALSE, warning=FALSE}
+## extract correlation at ctd locations - monthly average 
+temp_ctd_cor_month <- tibble()
+for (s in 1:length(source_list)) {
+  for (i in 1:length(area_list)) {
+    ## note
+    #print(paste("processing", source[s], ices_area[i]))
+    
+    ## subset temp_ctd
+    temp_ctd_sub <- temp_ctd %>% 
+      filter(is.na(temp) == F,
+             source == source_list[s],
+             IcesArea == area_list[i]) %>%
+      group_by(source, IcesArea, date_match) %>%
+      summarize(ctd = mean(ctd, na.rm = T),
+                temp = mean(temp, na.rm = T))
+    
+    ## linear regression
+    lm <- lm(temp ~ ctd, data = temp_ctd_sub)
+    
+    ## df with r_squared
+    df_temp <- tibble(source = source_list[s],
+                      ices_area = area_list[i],
+                      r_squared = round(summary(lm)$adj.r.squared, 2))
+    
+    temp_ctd_cor_month <- bind_rows(temp_ctd_cor_month, df_temp)
+
+  }
+}
+```
+
+summary 
+```{r}
+## r_squared at ctd locations
+temp_ctd_cor %>% 
+  pivot_wider(names_from = ices_area, values_from = r_squared) %>%
+  select(source, `4abc`, `7a`, `8ab`)
+```
+
+```{r}
+## r_squared at ctd locations - monthly average
+temp_ctd_cor_month %>% 
+  pivot_wider(names_from = ices_area, values_from = r_squared) %>%
+  select(source, `4abc`, `7a`, `8ab`)
+```
+
+### history vs projection
+
+#### isimip - pre and post 2014
+```{r}
+## get list of source and area
+period_list <- tibble(min_year = c(1850, 2015),
+                      max_year = c(2014, 2100),
+                      period = c("pre2014", "post2014"))
+area_list <- unique(temp_ctd$IcesArea)
+```
+
+```{r message=FALSE, warning=FALSE}
+## extract correlation at ctd locations
+temp_ctd_cor_isimip <- tibble()
+for (p in 1:length(period_list$period)) {
+  for (i in 1:length(area_list)) {
+    ## note
+    #print(paste("processing", source[s], ices_area[i]))
+    
+    ## subset temp_ctd
+    temp_ctd_sub <- temp_ctd %>% filter(is.na(temp) == F,
+                                    source == "isimip",
+                                    IcesArea == area_list[i],
+                                    Year >= period_list$min_year[p],
+                                    Year <= period_list$max_year[p])
+
+    ## linear regression
+    lm <- lm(temp ~ ctd, data = temp_ctd_sub)
+    
+    ## df with r_squared
+    df_temp <- tibble(source = "isimip",
+                      ices_area = area_list[i],
+                      r_squared = round(summary(lm)$adj.r.squared, 2),
+                      n_obs = nrow(temp_ctd_sub), 
+                      period = period_list$period[p])
+    
+    temp_ctd_cor_isimip <- bind_rows(temp_ctd_cor_isimip, df_temp)
+    }
+}
+
+```
+
+```{r message=FALSE, warning=FALSE}
+temp_ctd_cor_month_isimip <- tibble()
+for (p in 1:length(period_list$period)) {
+  for (i in 1:length(area_list)) {
+    ## note
+    #print(paste("processing", source[s], ices_area[i]))
+    
+    ## subset temp_ctd
+    temp_ctd_sub <- temp_ctd %>% filter(is.na(temp) == F,
+                                    source == "isimip",
+                                    IcesArea == area_list[i],
+                                    Year >= period_list$min_year[p],
+                                    Year <= period_list$max_year[p])
+    temp_ctd_sub_month <- temp_ctd_sub %>%  
+      group_by(source, IcesArea, date_match) %>%
+      summarize(ctd = mean(ctd, na.rm = T),
+                temp = mean(temp, na.rm = T))
+    
+    ## linear regression
+    lm <- lm(temp ~ ctd, data = temp_ctd_sub_month)
+    
+    ## df with r_squared
+    df_temp <- tibble(source = source_list[s],
+                      ices_area = area_list[i],
+                      r_squared = round(summary(lm)$adj.r.squared, 2),
+                      n_obs = nrow(temp_ctd_sub), 
+                      period = period_list$period[p])
+    
+    temp_ctd_cor_month_isimip <- bind_rows(temp_ctd_cor_month_isimip, df_temp)
+
+  }
+}
+```
+summary 
+```{r}
+## r_squared at ctd locations
+temp_ctd_cor_isimip %>% arrange(ices_area)
+```
+
+```{r}
+## r_squared at ctd locations - monthly average
+temp_ctd_cor_month_isimip %>% arrange(ices_area)
+```
+
+
