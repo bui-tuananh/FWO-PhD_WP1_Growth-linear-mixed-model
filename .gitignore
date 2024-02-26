@@ -3,3 +3,14 @@
 .RData
 .Ruserdata
 data
+doc
+output
+report
+1_explore data.nb.html
+1_explore-data.html
+3_report_descriptive-results.html
+3_report_descriptive-results.nb.html
+3_report_model-results.html
+3_report_model-results.nb.html
+si_otolith-reading-precision.html
+si_sbt_in-situ ctd vs modeled temperature.nb.html
