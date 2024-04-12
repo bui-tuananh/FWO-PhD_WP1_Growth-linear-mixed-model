@@ -220,15 +220,6 @@ data_sol <- read_rds(file.path(dir_ices, "stock-assessment_2023.rds")) %>%
   mutate(ssb.i = ssb/area_km2,
          recruitment.i = recruitment/area_km2)
 
-# plaice stock assessment
-data_ple <- read_rds(file.path(dir_ices, "ple_stock-assessment_2023.rds")) %>%
-  rename(ssb_ple = SSB,
-         recruitment_ple = recruitment) %>%
-  select(pop, year, ssb_ple, recruitment_ple) %>%
-  left_join(datras) %>%
-  mutate(ssb_ple.i = ssb_ple/area_km2,
-         recruitment_ple.i = recruitment_ple/area_km2)
-
 ## Nutrient data ----
 dir_nu <- "./data/nutrient"
 data_nu <- read_rds(file.path(dir_nu, "ospar_subset_1978-2017_ices_4abc.rds"))
@@ -375,7 +366,7 @@ ggplot(data = otl_sub, aes(x = width, y = fish.length)) +
        y = "Fish length (mm)") +
   annotate("text", 
            x = 5500, y = 240, 
-           label = expression("" ~ R^2 ~ " = 0.53, p < 0.01, n = 2152"), 
+           label = expression("" ~ R^2 ~ " = 0.53, p < 0.001, n = 2152"), 
            size = 3) 
 
 # note: 
@@ -1542,7 +1533,7 @@ col.header <- c("Intercept",
 tab_df(df,
        CSS = css_list,
        col.header = col.header,
-       file = file.path(dir_report, "tableS5_intrinsc structure.html")) 
+       file = file.path(dir_report, "tableS5_intrinsic structure.html")) 
 
 ## table S6 - model - extrinsic structure ----
 #### setup
@@ -1607,7 +1598,7 @@ col.header <- c("Spawning stock biomass",
 tab_df(df,
        CSS = css_list,
        col.header = col.header,
-       file = file.path(dir_report, "tableS6_extrinisc structure.html")) 
+       file = file.path(dir_report, "tableS6_extrinsic structure.html")) 
 
 ## table S7 - model - extrinsic extended - nutrient ----
 list_model <- tibble(source = c("isimip", "oras5", "nemo-medusa"))
@@ -1653,7 +1644,7 @@ col.header <- c("Spawning stock biomass",
 tab_df(df,
        CSS = css_list,
        col.header = col.header,
-       file = file.path(dir_report, "tableS7_extrinisc structure_nutrient.html")) 
+       file = file.path(dir_report, "tableS7_extrinsic structure_nutrient.html")) 
 
 ## table S8 - model - extrinsic extended structure ----
 #### setup
@@ -1717,7 +1708,7 @@ col.header <- c("Spawning stock biomass",
 tab_df(df,
        CSS = css_list,
        col.header = col.header,
-       file = file.path(dir_report, "tableS8_extrinisc extended structure.html")) 
+       file = file.path(dir_report, "tableS8_extrinsic extended structure.html")) 
 
 ## table S9 - model - extrinsic extended structure - nutrient ----
 list_model <- tibble(source = c("isimip", "oras5", "nemo-medusa"))
@@ -1776,9 +1767,40 @@ col.header <- c("Spawning stock biomass",
 tab_df(df,
        CSS = css_list,
        col.header = col.header,
-       file = file.path(dir_report, "tableS9_extrinisc structure_nutrient.html")) 
+       file = file.path(dir_report, "tableS9_extrinsic structure_nutrient.html")) 
 
-## table S10 - model summary - extrinsic - nutrient ----
+## table S10 - model summary  ----
+pred_labels <- c(
+  "Intercept",
+  "Age",
+  "Age at capture",
+  "Reading Institute (WUR)",
+  "Reading Institute (WUR) * Age",
+  "Spawning Stock Biomass",
+  "Recruitment",
+  "Temperature_population-anomaly",
+  "Temperature_population-anomaly * Age"
+)
+
+# summary table
+tab_model(m3, m4_isimip, m4_oras5, m4_nm, show.se = TRUE, 
+                 show.ci = NULL, show.p = FALSE,
+                 dv.labels = c("Intrinsic model", 
+                               "Population-level extrinsic model (ISIMIP)", 
+                               "Population-level extrinsic model (ORAS5)", 
+                               "Population-level extrinsic model (NEMO-MEDUSA)"),
+                 pred.labels = pred_labels,
+                 string.pred = "Fixed Effects",
+                 string.est = "Estimate (SE)",
+                 collapse.se = TRUE,
+                 show.icc = FALSE,
+                 digits.rsq = 2,
+                 CSS = css_list,
+                 file = file.path(dir_report, "tableS10_model_summary.html")
+)
+
+
+## table S11 - model summary - nutrient ----
 # labels
 pred_labels <- c(
   "Spawning Stock Biomass",
@@ -1790,54 +1812,22 @@ pred_labels <- c(
 
 # summary table
 tab_model(m4_nu_isimip, m4_nu_oras5, m4_nu_nm, show.se = TRUE, 
-                 terms = c("ssb.i", "recruitment.i", "c.temp", "log.age:c.temp", "TP"),
-                 order.terms = c(1,2,3,4,5),
-                 show.ci = NULL, show.p = FALSE,
-                 show.re.var = FALSE,
-                 dv.labels = c("Extrinsic (ISIMIP)", "Extrinsic (ORAS5)", "Extrinsic (NEMO-MEDUSA)"),
-                 pred.labels = pred_labels,
-                 string.pred = "Fixed Effects",
-                 string.est = "Estimate (SE)",
-                 collapse.se = TRUE,
-                 show.icc = FALSE,
-                 digits = 3,
-                 digits.rsq = 2,
-                 CSS = css_list,
-                 file = file.path(dir_report, "tableS10_model_summary_nu.html"))
-
-## table S11 - model summary - extrinsic extended  ----
-pred_labels <- c(
-  "Intercept",
-  "Age",
-  "Age at capture",
-  "Reading Institute (WUR)",
-  "Reading Institute (WUR) * Age",
-  "Spawning Stock Biomass",
-  "Recruitment",
-  "Temperature_individual-anomaly",
-  "Temperature_individual-average",
-  "Temperature_individual-anomaly * Age",
-  "Temperature_individual-average * Age",
-  "Temperature_individual-anomaly * Spawning Stock Biomass",
-  "Fishing mortality",
-  "Temperature_individual-anomaly * Fishing mortality",
-  "Temperature_individual-anomaly * Recruitment"
-)
-
-# summary table
-tab_model(m3, m5_isimip, m5_oras5, m5_nm, show.se = TRUE, 
-                 show.ci = NULL, show.p = FALSE,
-                 dv.labels = c("Intrinsic", "Extrinsic extended (ISIMIP)", "Extrinsic extended (ORAS5)", "Extrinsic extended (NEMO-MEDUSA)"),
-                 order.terms = c(1,2,3,4,5,6,7,13,8,10,12,15,14,9,11),
-                 pred.labels = pred_labels,
-                 string.pred = "Fixed Effects",
-                 string.est = "Estimate (SE)",
-                 collapse.se = TRUE,
-                 show.icc = FALSE,
-                 digits.rsq = 2,
-                 CSS = css_list,
-                 file = file.path(dir_report, "tableS11_model_ext_summary.html")
-)
+          terms = c("ssb.i", "recruitment.i", "c.temp", "log.age:c.temp", "TP"),
+          order.terms = c(1,2,3,4,5),
+          show.ci = NULL, show.p = FALSE,
+          show.re.var = FALSE,
+          dv.labels = c("Population-level extrinsic model (ISIMIP)", 
+                        "Population-level extrinsic model (ORAS5)", 
+                        "Population-level extrinsic model (NEMO-MEDUSA)"),
+          pred.labels = pred_labels,
+          string.pred = "Fixed Effects",
+          string.est = "Estimate (SE)",
+          collapse.se = TRUE,
+          show.icc = FALSE,
+          digits = 3,
+          digits.rsq = 2,
+          CSS = css_list,
+          file = file.path(dir_report, "tableS11_model_summary_nu.html"))
 
 ## table S12 - model summary - extrinsic extended - nutrient  ----
 # labels
@@ -1866,7 +1856,9 @@ tab_model(m5_nu_isimip, m5_nu_oras5, m5_nu_nm, show.se = TRUE,
                  pred.labels = pred_labels,
                  show.ci = NULL, show.p = FALSE,
                  show.re.var = FALSE,
-                 dv.labels = c("Extrinsic extended (ISIMIP)", "Extrinsic extended (ORAS5)", "Extrinsic extended (NEMO-MEDUSA)"),
+                 dv.labels = c("Individual-level extrinsic model (ISIMIP)", 
+                               "Individual-level extrinsic model (ORAS5)", 
+                               "Individual-level extrinsic model (NEMO-MEDUSA)"),
                  string.pred = "Fixed Effects",
                  string.est = "Estimate (SE)",
                  collapse.se = TRUE,
@@ -1876,3 +1868,58 @@ tab_model(m5_nu_isimip, m5_nu_oras5, m5_nu_nm, show.se = TRUE,
                  CSS = css_list,
                  file = file.path(dir_report, "tableS12_model_ext_summary_nu.html")
 )
+
+## table S13 - c.temp variance ratio ----
+list_pair <- tibble(pop_pair = c("4bc/8ab", "7a/8ab", "4bc/7a"),
+                    pop_pair_name = factor(c("North Sea/Bay of Biscay", 
+                                             "Irish Sea/Bay of Biscay", 
+                                             "North Sea/Irish Sea"),
+                                           levels = c("North Sea/Bay of Biscay", 
+                                                      "Irish Sea/Bay of Biscay", 
+                                                      "North Sea/Irish Sea")))
+pop_pair <- tibble(pop1 = c("4bc", "4bc", "7a"),
+                   pop2 = c("7a", "8ab", "8ab"))
+source_list = c("isimip", "oras5", "nemo-medusa")
+
+df <- tibble()
+for(i in 1:3) {
+  for(p in 1:3) {
+    print(paste0("processing ", pop_pair$pop1[p], "/", pop_pair$pop2[p]))
+    
+    pop1 <- pop_pair$pop1[p]
+    pop2 <- pop_pair$pop2[p]
+    
+    df_pop1 <- data_temp %>% filter(pop == pop1, source == source_list[i])
+    df_pop2 <- data_temp %>% filter(pop == pop2, source == source_list[i])
+    
+    var_test <- var.test(df_pop1$c.temp, df_pop2$c.temp)
+    
+    df_temp <- tibble(source = source_list[i],
+                      pop_pair = paste0(pop1, "/", pop2),
+                      var_ratio = sprintf("%.*f", 2, var_test$statistic),
+                      ci95 = paste0(sprintf("%.*f", 2, var_test$conf.int[1]),
+                                    " - ",
+                                    sprintf("%.*f", 2, var_test$conf.int[2])),
+                      p_value = sprintf("%.*f", 2, var_test$p.value))
+    
+    df <- bind_rows(df, df_temp)
+  }
+}
+
+df <- df %>% 
+  left_join(df_temp_name) %>%
+  left_join(list_pair) %>%
+  select(source_name, pop_pair_name, var_ratio, ci95, p_value) %>% 
+  arrange(source_name, pop_pair_name)
+
+#### save table
+col.header <- c("Temperature dataset", 
+                "Population pair", 
+                "Variance ratio",
+                "95% confidence interval",
+                "p-value")
+
+tab_df(df,
+       CSS = css_list,
+       col.header = col.header,
+       file = file.path(dir_report, "tableS13_c.temp variance.html"))

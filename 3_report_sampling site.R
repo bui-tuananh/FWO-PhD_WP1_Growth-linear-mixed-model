@@ -160,15 +160,6 @@ data_sol <- read_rds(file.path(dir_ices, "stock-assessment_2023.rds")) %>%
   mutate(ssb.i = ssb/area_km2,
          recruitment.i = recruitment/area_km2)
 
-# plaice stock assessment
-data_ple <- read_rds(file.path(dir_ices, "ple_stock-assessment_2023.rds")) %>%
-  rename(ssb_ple = SSB,
-         recruitment_ple = recruitment) %>%
-  select(pop, year, ssb_ple, recruitment_ple) %>%
-  left_join(datras) %>%
-  mutate(ssb_ple.i = ssb_ple/area_km2,
-         recruitment_ple.i = recruitment_ple/area_km2)
-
 ## 2.4. Nutrient data ----
 dir_nu <- "./data/nutrient"
 data_nu <- read_rds(file.path(dir_nu, "ospar_subset_1978-2017_ices_4abc.rds"))
@@ -251,8 +242,7 @@ ggplot() +
   theme_bw() +
   theme(legend.position = c(0.99, 0.001),
         legend.justification = c(1, 0),
-        legend.direction="horizontal",
-        axis.title = element_blank()) +
+        legend.direction="horizontal") +
   scale_fill_gradientn(
     colours = fill_colours,
     breaks = slice(legend, c(1,3,5,7,9,11))$breaks,
@@ -262,7 +252,9 @@ ggplot() +
                            title.position = "top", #left
                            #title.vjust = 0.7,
                            title.hjust = 0.5,
-                           barwidth = 10))
+                           barwidth = 10)) +
+  labs(x = "Longitude",
+       y = "Latitude")
 
 p_main <- last_plot()
 
@@ -312,10 +304,11 @@ ggplot() +
   theme(legend.position = c(0, 1.05),
         legend.justification = c(0, 1),
         legend.background = element_rect(fill='transparent'),
-        axis.title.x = element_blank(),
+        #axis.title.x = element_blank(),
         legend.title = element_blank(),
   ) +
-  labs(y = "Scaled value",
+  labs(x = "Year",
+       y = "Scaled value",
        linetype = "Nutrient",
        color = "Nutrient")  +
   scale_color_manual(values=c("#7570b3", "#7570b3")) +

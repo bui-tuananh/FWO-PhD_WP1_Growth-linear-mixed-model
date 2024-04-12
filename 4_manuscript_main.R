@@ -200,15 +200,6 @@ data_sol <- read_rds(file.path(dir_ices, "stock-assessment_2023.rds")) %>%
   mutate(ssb.i = ssb/area_km2,
          recruitment.i = recruitment/area_km2)
 
-# plaice stock assessment
-data_ple <- read_rds(file.path(dir_ices, "ple_stock-assessment_2023.rds")) %>%
-  rename(ssb_ple = SSB,
-         recruitment_ple = recruitment) %>%
-  select(pop, year, ssb_ple, recruitment_ple) %>%
-  left_join(datras) %>%
-  mutate(ssb_ple.i = ssb_ple/area_km2,
-         recruitment_ple.i = recruitment_ple/area_km2)
-
 ## Nutrient data ----
 dir_nu <- "./data/nutrient"
 data_nu <- read_rds(file.path(dir_nu, "ospar_subset_1978-2017_ices_4abc.rds"))
@@ -297,13 +288,12 @@ pred <- as.data.frame(Effect(c("log.age"),
 
 # plot
 ggplot(data = pred) + 
-  geom_point(aes(x = age, 
-                 y = exp(fit))) +
   geom_line(aes(x = age, 
                 y = exp(fit))) +
-  geom_linerange(aes(x = age,
-                    ymin = exp(lower),
-                    ymax = exp(upper))) +
+  geom_ribbon(aes(x = age,
+                  ymin = exp(lower),
+                  ymax = exp(upper)), 
+              alpha = 0.5) +
   labs(x = "Age (years)",
        y = "Predicted increment growth (μm)")
 
@@ -371,12 +361,12 @@ pred_year <- pred_year %>%
   left_join(df_pop)
 
 age1 <- pred_year %>% mutate(ranef = intercept + log.age*df_age$log.age[1],
-                             ranef_upper = intercept + intercept_se + (log.age + log.age_se)*df_age$log.age[1],
-                             ranef_lower = intercept - intercept_se + (log.age - log.age_se)*df_age$log.age[1],
+                             ranef_upper = intercept + intercept_se*1.96 + (log.age + log.age_se*1.96)*df_age$log.age[1],
+                             ranef_lower = intercept - intercept_se*1.96 + (log.age - log.age_se*1.96)*df_age$log.age[1],
                              age = "Age 1")
 age5 <- pred_year %>% mutate(ranef = intercept + log.age*df_age$log.age[5],
-                             ranef_upper = intercept + intercept_se + (log.age + log.age_se)*df_age$log.age[5],
-                             ranef_lower = intercept - intercept_se + (log.age - log.age_se)*df_age$log.age[5],
+                             ranef_upper = intercept + intercept_se*1.96 + (log.age + log.age_se*1.96)*df_age$log.age[5],
+                             ranef_lower = intercept - intercept_se*1.96 + (log.age - log.age_se*1.96)*df_age$log.age[5],
                              age = "Age 5")
 age_all <- bind_rows(age1, age5)
 
@@ -1270,24 +1260,33 @@ pred_labels <- c(
   "Reading Institute (WUR) * Age",
   "Spawning Stock Biomass",
   "Recruitment",
-  "Temperature_population-anomaly",
-  "Temperature_population-anomaly * Age"
+  "Temperature_individual-anomaly",
+  "Temperature_individual-average",
+  "Temperature_individual-anomaly * Age",
+  "Temperature_individual-average * Age",
+  "Temperature_individual-anomaly * Spawning Stock Biomass",
+  "Fishing mortality",
+  "Temperature_individual-anomaly * Fishing mortality",
+  "Temperature_individual-anomaly * Recruitment"
 )
 
 # summary table
-tab <- tab_model(m3, m4_isimip, m4_oras5, m4_nm, show.se = TRUE, 
-                 show.ci = NULL, show.p = FALSE,
-                 dv.labels = c("Intrinsic", "Extrinsic (ISIMIP)", "Extrinsic (ORAS5)", "Extrinsic (NEMO-MEDUSA)"),
-                 pred.labels = pred_labels,
-                 string.pred = "Fixed Effects",
-                 string.est = "Estimate (SE)",
-                 collapse.se = TRUE,
-                 show.icc = FALSE,
-                 digits.rsq = 2,
-                 CSS = css_list,
-                 file = file.path(dir_report, "table2_model_summary.html")
+tab_model(m3, m5_isimip, m5_oras5, m5_nm, show.se = TRUE, 
+          show.ci = NULL, show.p = FALSE,
+          dv.labels = c("Intrinsic model", 
+                        "Individual-level extrinsic model (ISIMIP)", 
+                        "Individual-level extrinsic model (ORAS5)", 
+                        "Individual-level extrinsic model (NEMO-MEDUSA)"),
+          order.terms = c(1,2,3,4,5,6,7,13,8,10,12,15,14,9,11),
+          pred.labels = pred_labels,
+          string.pred = "Fixed Effects",
+          string.est = "Estimate (SE)",
+          collapse.se = TRUE,
+          show.icc = FALSE,
+          digits.rsq = 2,
+          CSS = css_list,
+          file = file.path(dir_report, "table3_model_ext_summary.html")
 )
-tab
 
 #### note: 
 # tab_model cannot customised the random effect names
