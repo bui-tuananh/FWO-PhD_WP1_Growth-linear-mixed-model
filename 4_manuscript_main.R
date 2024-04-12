@@ -399,7 +399,7 @@ ggsave(last_plot(), file = file.path(dir_report, "fig5_growth temporal trend.eps
 
 ## figure 6 - c.temp, c.temp_within, c.temp_between ----
 
-plot_list <- list()
+list_plot <- list()
 
 ### c.temp ----
 #### setup
@@ -457,7 +457,7 @@ p1 <- ggplot(data = pred %>% filter(age %in% c(1))) +
                   fill = source_name), 
               alpha = 0.1) +
   facet_grid(. ~ age_name)  +
-  labs(x = expression('Temperature'['population-anomaly'] * ' (°C)'),
+  labs(x = expression('T'['population-anomaly'] * ' (°C)'),
        y = "Predicted increment growth (μm)",
        color = "Dataset",
        fill = "Dataset") +
@@ -475,7 +475,7 @@ p2 <- ggplot(data = pred %>% filter(age %in% c(5))) +
                   fill = source_name), 
               alpha = 0.1) +
   facet_grid(. ~ age_name) +
-  labs(x = expression('Temperature'['population-anomaly'] * ' (°C)'),
+  labs(x = expression('T'['population-anomaly'] * ' (°C)'),
        y = "Predicted increment growth (μm)",
        color = "Dataset",
        fill = "Dataset") +
@@ -531,7 +531,7 @@ p1 <- ggplot(data = pred %>% filter(age %in% c(1))) +
                   fill = source_name), 
               alpha = 0.1) +
   facet_grid(. ~ age_name)  +
-  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+  labs(x = expression('T'['individual-anomaly'] * ' (°C)'),
        y = "Predicted increment growth (μm)",
        color = "Dataset",
        fill = "Dataset") +
@@ -549,7 +549,7 @@ p2 <- ggplot(data = pred %>% filter(age %in% c(5))) +
                   fill = source_name), 
               alpha = 0.1) +
   facet_grid(. ~ age_name) +
-  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+  labs(x = expression('T'['individual-anomaly'] * ' (°C)'),
        y = "Predicted increment growth (μm)",
        color = "Dataset",
        fill = "Dataset") +
@@ -606,7 +606,7 @@ p1 <- ggplot(data = pred %>% filter(age %in% c(1))) +
                   fill = source_name), 
               alpha = 0.1) +
   facet_grid(. ~ age_name)  +
-  labs(x = expression('Temperature'['individual-average'] * ' (°C)'),
+  labs(x = expression('T'['individual-average'] * ' (°C)'),
        y = "Predicted increment growth (μm)",
        color = "Dataset",
        fill = "Dataset") +
@@ -624,7 +624,7 @@ p2 <- ggplot(data = pred %>% filter(age %in% c(5))) +
                   fill = source_name), 
               alpha = 0.1) +
   facet_grid(. ~ age_name) +
-  labs(x = expression('Temperature'['individual-average'] * ' (°C)'),
+  labs(x = expression('T'['individual-average'] * ' (°C)'),
        y = "Predicted increment growth (μm)",
        color = "Dataset",
        fill = "Dataset") +

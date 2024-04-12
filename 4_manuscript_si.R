@@ -561,7 +561,7 @@ ggplot(data = data_temp %>% left_join(df_pop),
   geom_hline(yintercept = 0, linetype = "dashed") +
   facet_grid(pop.name ~ .) +
   labs(x = "Year",
-       y = expression('Temperature'['population-anomaly'] * ' (°C)'),
+       y = expression('T'['population-anomaly'] * ' (°C)'),
        color = "Dataset") +
   theme(legend.position = "bottom") +
   scale_color_manual(values = col_scale)
