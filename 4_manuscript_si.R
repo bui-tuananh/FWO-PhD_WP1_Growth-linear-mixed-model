@@ -717,6 +717,7 @@ ggsave(last_plot(), file = file.path(dir_report, "figS15_nutrient.eps"),
 
 ## fig S16 - intrinsic - reading institute (datasource) ----
 #### setup
+data <- m3@frame
 pred <- as.data.frame(Effect(c("log.age", "datasource"), 
                              m3, 
                              xlevels = list(log.age = unique(data$log.age)))) %>%
@@ -729,10 +730,10 @@ ggplot(data = pred) +
                 y = exp(fit),
                 linetype = datasource),
             linewidth = 0.5) +
-  geom_linerange(aes(x = age,
-                     ymin = exp(lower),
-                     ymax = exp(upper),
-                     linetype = datasource)) +
+  #geom_linerange(aes(x = age,
+  #                   ymin = exp(lower),
+  #                   ymax = exp(upper),
+  #                   linetype = datasource)) +
   labs(x = "Age (years)",
        y = "Predicted increment growth (μm)",
        color = "Reading institute",
@@ -769,8 +770,8 @@ ggplot(data = pred_pop) +
   geom_point(aes(x = pop.name, 
                  y = intercept)) +
   geom_linerange(aes(x = pop.name,
-                    ymin = intercept + se,
-                    ymax = intercept - se)) +
+                    ymin = intercept + 1.96*se,
+                    ymax = intercept - 1.96*se)) +
   labs(x = "Population",
        y = "Population random effect")
 
@@ -1258,8 +1259,8 @@ ggplot(data = df_all,
        aes(x = estimate, 
            y = data_name)) +
   geom_point() +
-  geom_linerange(aes(xmin = estimate - std.error,
-                     xmax = estimate + std.error)) +
+  geom_linerange(aes(xmin = estimate - 1.96*std.error,
+                     xmax = estimate + 1.96*std.error)) +
   geom_vline(xintercept = 0, linetype = "dashed") +
   facet_grid(source_name ~ term_name) +
   labs(x = "Parameter estimate",

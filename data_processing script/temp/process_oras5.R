@@ -83,5 +83,3 @@ oras_df <- oras_df %>%
 
 #### save file
 write_rds(oras_df, "./Env/ORAS5_0.25deg_1958-2022/oras5_datras.rds")
-
-
