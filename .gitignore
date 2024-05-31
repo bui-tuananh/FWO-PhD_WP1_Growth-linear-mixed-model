@@ -5,7 +5,6 @@
 data
 doc
 output
-report
 1_explore data.nb.html
 1_explore-data.html
 3_report_descriptive-results.html
