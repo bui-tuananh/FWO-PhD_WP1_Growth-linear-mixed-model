@@ -1154,7 +1154,7 @@ list_plot[[6]] <- p2
         axis.title = element_text(size = 9),
         plot.tag.position  = c(0.81, 0.82),
         #plot.tag = element_text(size = 9),
-        legend.key.size = unit(10, "pt"),
+        legend.key.size = unit(15, "pt"),
         legend.title = element_text(size = 9),
         legend.text = element_text(size = 9),
         strip.text.y = element_text(size = 7))
