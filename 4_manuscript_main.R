@@ -327,20 +327,19 @@ list_plot[[2]] <- last_plot()
 (list_plot[[1]] | list_plot[[2]]) + 
   plot_annotation(tag_levels = 'A') + 
   plot_layout(guides = "collect", axis_titles = "collect") &
-  theme(plot.tag.position  = c(0.95, 0.9))
+  theme(plot.tag.position  = c(0.95, 0.9),
+        axis.title = element_text(size = 9))
 
 # save file
- 
+ggsave(last_plot(), file = file.path(dir_report, "fig4_intrinsic effects.pdf"),
+       device = cairo_pdf,
+       width =  19, height = 6.3,
+       units = "cm"
+       ) 
 ggsave(last_plot(), file = file.path(dir_report, "fig4_intrinsic effects.tiff"),
-       width =  17, height = 5.75,
+       width =  19, height = 6.3,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "fig4_intrinsic effects.eps"),
-       width =  17, height = 5.75,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## figure 5 - growth temporal trend (year random effect) ----
 # year random intercept + log.age slope (1 + log.age | pop.year) 
@@ -383,19 +382,18 @@ ggplot() +
              linetype="dashed") +
   facet_grid(pop.name ~ age)  +
   labs(x = "Year",
-       y = "Year random effect")
+       y = "Year random effect") +
+  theme(axis.title = element_text(size = 9))
 
 #### save plot
+ggsave(last_plot(), file = file.path(dir_report, "fig5_growth temporal trend.pdf"),
+       device = cairo_pdf,
+       width =  19, height = 12.6,
+       units = "cm") 
 ggsave(last_plot(), file = file.path(dir_report, "fig5_growth temporal trend.tiff"),
-       width =  17, height = 11.5,
+       width =  19, height = 12.6,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "fig5_growth temporal trend.eps"),
-       width =  17, height = 11.5,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## figure 6 - c.temp, c.temp_within, c.temp_between ----
 
@@ -462,7 +460,7 @@ p1 <- ggplot(data = pred %>% filter(age %in% c(1))) +
        color = "Dataset",
        fill = "Dataset") +
   scale_color_manual(values = col_scale) +
-  scale_fill_manual(values = col_scale) 
+  scale_fill_manual(values = col_scale)
 
 p2 <- ggplot(data = pred %>% filter(age %in% c(5))) + 
   geom_line(aes(x = c.temp, 
@@ -485,79 +483,6 @@ p2 <- ggplot(data = pred %>% filter(age %in% c(5))) +
 list_plot[[1]] <- p1 
 list_plot[[2]] <- p2 
 
-### c.temp_within ----
-#### setup
-# note: fit within range [-1,1] as temperatures has different range 
-
-list_model <- list("isimip" = m5_isimip,
-                   "oras5" = m5_oras5,
-                   "nemo-medusa" = m5_nm
-)
-
-pred <- tibble()
-for (i in 1:3) {
-  model <- list_model[[i]]
-  data <- model@frame
-  temp_source <- names(list_model[i])
-  
-  pred_temp <- as.data.frame(Effect(c("log.age", "c.temp_within"), 
-                                    model, 
-                                    xlevels = list(log.age = unique(data$log.age),
-                                                   c.temp_within = seq(-1, 1, 0.1)))) %>%
-    mutate(age = round(exp(log.age),1)) %>%
-    mutate(source = temp_source)
-  
-  pred <- bind_rows(pred, pred_temp)
-}
-
-df_age <- tibble(age = c(1,5),
-                 age_name = c("Age 1", "Age 5"))
-
-pred <- pred %>% 
-  left_join(df_age) %>%
-  left_join(df_temp_name)
-
-#### plot
-col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
-
-p1 <- ggplot(data = pred %>% filter(age %in% c(1))) + 
-  geom_line(aes(x = c.temp_within, 
-                y = exp(fit),
-                color = source_name),
-            linewidth = 1) +
-  geom_ribbon(aes(x = c.temp_within,
-                  ymin = exp(lower),
-                  ymax = exp(upper),
-                  fill = source_name), 
-              alpha = 0.1) +
-  facet_grid(. ~ age_name)  +
-  labs(x = expression('T'['individual-anomaly'] * ' (°C)'),
-       y = "Predicted increment growth (μm)",
-       color = "Dataset",
-       fill = "Dataset") +
-  scale_color_manual(values = col_scale) +
-  scale_fill_manual(values = col_scale)
-
-p2 <- ggplot(data = pred %>% filter(age %in% c(5))) + 
-  geom_line(aes(x = c.temp_within, 
-                y = exp(fit),
-                color = source_name),
-            linewidth = 1) +
-  geom_ribbon(aes(x = c.temp_within,
-                  ymin = exp(lower),
-                  ymax = exp(upper),
-                  fill = source_name), 
-              alpha = 0.1) +
-  facet_grid(. ~ age_name) +
-  labs(x = expression('T'['individual-anomaly'] * ' (°C)'),
-       y = "Predicted increment growth (μm)",
-       color = "Dataset",
-       fill = "Dataset") +
-  scale_color_manual(values = col_scale) +
-  scale_fill_manual(values = col_scale)
-
-list_plot[[3]] <- p1 
-list_plot[[4]] <- p2 
 
 ### c.temp_between ----
 #### setup
@@ -631,6 +556,80 @@ p2 <- ggplot(data = pred %>% filter(age %in% c(5))) +
   scale_color_manual(values = col_scale) +
   scale_fill_manual(values = col_scale)
 
+list_plot[[3]] <- p1 
+list_plot[[4]] <- p2 
+
+### c.temp_within ----
+#### setup
+# note: fit within range [-1,1] as temperatures has different range 
+
+list_model <- list("isimip" = m5_isimip,
+                   "oras5" = m5_oras5,
+                   "nemo-medusa" = m5_nm
+)
+
+pred <- tibble()
+for (i in 1:3) {
+  model <- list_model[[i]]
+  data <- model@frame
+  temp_source <- names(list_model[i])
+  
+  pred_temp <- as.data.frame(Effect(c("log.age", "c.temp_within"), 
+                                    model, 
+                                    xlevels = list(log.age = unique(data$log.age),
+                                                   c.temp_within = seq(-1, 1, 0.1)))) %>%
+    mutate(age = round(exp(log.age),1)) %>%
+    mutate(source = temp_source)
+  
+  pred <- bind_rows(pred, pred_temp)
+}
+
+df_age <- tibble(age = c(1,5),
+                 age_name = c("Age 1", "Age 5"))
+
+pred <- pred %>% 
+  left_join(df_age) %>%
+  left_join(df_temp_name)
+
+#### plot
+col_scale <- c("ISIMIP" = "#F8766D", "ORAS5" = "#00BFC4", "NEMO-MEDUSA" = "#7CAE00")
+
+p1 <- ggplot(data = pred %>% filter(age %in% c(1))) + 
+  geom_line(aes(x = c.temp_within, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp_within,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  facet_grid(. ~ age_name)  +
+  labs(x = expression('T'['individual-anomaly'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale) 
+
+p2 <- ggplot(data = pred %>% filter(age %in% c(5))) + 
+  geom_line(aes(x = c.temp_within, 
+                y = exp(fit),
+                color = source_name),
+            linewidth = 1) +
+  geom_ribbon(aes(x = c.temp_within,
+                  ymin = exp(lower),
+                  ymax = exp(upper),
+                  fill = source_name), 
+              alpha = 0.1) +
+  facet_grid(. ~ age_name) +
+  labs(x = expression('T'['individual-anomaly'] * ' (°C)'),
+       y = "Predicted increment growth (μm)",
+       color = "Dataset",
+       fill = "Dataset") +
+  scale_color_manual(values = col_scale) +
+  scale_fill_manual(values = col_scale) 
+
 list_plot[[5]] <- p1 
 list_plot[[6]] <- p2 
 
@@ -641,20 +640,22 @@ list_plot[[6]] <- p2
     list_plot[[5]] + list_plot[[6]]) +
   plot_layout(nrow = 3, axis_titles = "collect", guides = "collect") +
   plot_annotation(tag_levels = 'A') &  
-  theme(legend.position = "bottom", plot.tag.position  = c(0.95, 0.85))
+  theme(legend.position = "bottom", 
+        plot.tag.position  = c(0.92, 0.82), # c(0.95, 0.85)
+        axis.title = element_text(size = 9),
+        legend.key.size = unit(10, "pt"),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 9))
 
 # save file
- 
+ggsave(last_plot(), file = file.path(dir_report, "fig6_temp effects.pdf"),
+       device = cairo_pdf,
+       width = 9, height = 18,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "fig6_temp effects.tiff"),
-       width = 8.5, height = 17,
+       width = 9, height = 18,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "fig6_temp effects.eps"),
-       width = 8.5, height = 17,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## figure 7 - extrinsic effects ----
 list_plot <- list()
@@ -695,12 +696,12 @@ ggplot(data = pred) +
                   ymax = exp(upper),
                   fill = source_name), 
               alpha = 0.1) +
-  labs(x = "Spawning stock biomasss (tonne/km²)",
+  labs(x = "Spawning stock biomass (tonne/km²)",
        y = "Predicted increment growth (μm)",
        color = "Dataset",
        fill = "Dataset") +
   scale_color_manual(values = col_scale) +
-  scale_fill_manual(values = col_scale)
+  scale_fill_manual(values = col_scale) 
 
 list_plot[[1]] <- last_plot()
 
@@ -860,20 +861,23 @@ list_plot[[4]] <- last_plot()
    list_plot[[3]] + list_plot[[4]]) +
   plot_layout(nrow = 2, axis_titles = "collect", guides = "collect") +
   plot_annotation(tag_levels = 'A') &  
-  theme(legend.position = "bottom", plot.tag.position  = c(0.95, 0.9))
+  theme(legend.position = "bottom", 
+        plot.tag.position  = c(0.95, 0.9),
+        axis.title = element_text(size = 9),
+        legend.key.size = unit(10, "pt"),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 9)
+        )
 
 # save file
- 
+ggsave(last_plot(), file = file.path(dir_report, "fig7_extrinsic effects.pdf"),
+       device = cairo_pdf,
+       width =  19, height = 12.6,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "fig7_extrinsic effects.tiff"),
-       width =  17, height = 11.5,
+       width =  19, height = 12.6,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "fig7_extrinsic effects.eps"),
-       width =  17, height = 11.5,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## figure 8 - interaction c.temp_within vs env ----
 
@@ -930,7 +934,7 @@ p1 <- ggplot(data = pred %>% filter(age %in% c(1))) +
                   linetype = p_name),
               alpha = 0.1) +
   facet_grid(. ~ age_name)  +
-  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+  labs(x = expression('T'['individual-anomaly'] * ' (°C)'),
        y = "Predicted increment growth (μm)",
        color = "Dataset",
        fill = "Dataset",
@@ -956,7 +960,7 @@ p2 <- ggplot(data = pred %>% filter(age %in% c(5))) +
                   linetype = p_name),
               alpha = 0.1) +
   facet_grid(var ~ age_name)  +
-  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+  labs(x = expression('T'['individual-anomaly'] * ' (°C)'),
        y = "Predicted increment growth (μm)",
        color = "Dataset",
        fill = "Dataset",
@@ -1023,7 +1027,7 @@ p1 <- ggplot(data = pred %>% filter(age %in% c(1))) +
                   linetype = p_name),
               alpha = 0.1) +
   facet_grid(. ~ age_name)  +
-  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+  labs(x = expression('T'['individual-anomaly'] * ' (°C)'),
        y = "Predicted increment growth (μm)",
        color = "Dataset",
        fill = "Dataset",
@@ -1044,7 +1048,7 @@ p2 <- ggplot(data = pred %>% filter(age %in% c(5))) +
                   linetype = p_name),
               alpha = 0.1) +
   facet_grid(var ~ age_name) +
-  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+  labs(x = expression('T'['individual-anomaly'] * ' (°C)'),
        y = "Predicted increment growth (μm)",
        color = "Dataset",
        fill = "Dataset",
@@ -1106,7 +1110,7 @@ p1 <- ggplot(data = pred %>% filter(age %in% c(1))) +
                   linetype = p_name),
               alpha = 0.1) +
   facet_grid(. ~ age_name) +
-  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+  labs(x = expression('T'['individual-anomaly'] * ' (°C)'),
        y = "Predicted increment growth (μm)",
        color = "Dataset",
        fill = "Dataset",
@@ -1127,7 +1131,7 @@ p2 <- ggplot(data = pred %>% filter(age %in% c(5))) +
                   linetype = p_name),
               alpha = 0.1) +
   facet_grid(var ~ age_name) +
-  labs(x = expression('Temperature'['individual-anomaly'] * ' (°C)'),
+  labs(x = expression('T'['individual-anomaly'] * ' (°C)'),
        y = "Predicted increment growth (μm)",
        color = "Dataset",
        fill = "Dataset",
@@ -1147,20 +1151,23 @@ list_plot[[6]] <- p2
   plot_annotation(tag_levels = 'A') &  
   theme(legend.position = "bottom", 
         legend.box = "vertical",
-        plot.tag.position  = c(0.94, 0.85))
+        axis.title = element_text(size = 9),
+        plot.tag.position  = c(0.81, 0.82),
+        #plot.tag = element_text(size = 9),
+        legend.key.size = unit(10, "pt"),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 9),
+        strip.text.y = element_text(size = 7))
 
 # save file
- 
+ggsave(last_plot(), file = file.path(dir_report, "fig8_temp vs env.pdf"),
+       device = cairo_pdf,
+       width = 9, height = 18,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "fig8_temp vs env.tiff"),
-       width = 8.5, height =  17,
+       width = 9, height = 18,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "fig8_temp vs env.eps"),
-       width = 8.5, height =  17,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## figure 9 - ratio variance ----
 #### data 
@@ -1204,7 +1211,8 @@ ggplot() +
   geom_point(data = var_ratio, 
              aes(x = subset,
                  y = var_ratio),
-             position = position_dodge(width=0.5)) +
+             position = position_dodge(width=0.5),
+             size = rel(0.8)) +
   geom_linerange(data = var_ratio, 
                  aes(x = subset, 
                      y = var_ratio, 
@@ -1216,19 +1224,20 @@ ggplot() +
   scale_color_brewer(palette = "Paired") +
   labs(x = "Increment measurement range",
        y = "Variance ratio") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom",
+        strip.text = element_text(size = 5.5),
+        axis.text = element_text(size = 7),
+        axis.title = element_text(size = 9))
 
 #### save plot
+ggsave(last_plot(), file = file.path(dir_report, "fig9_variance ratio.pdf"),
+       device = cairo_pdf,
+       width = 9, height = 9,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "fig9_variance ratio.tiff"),
-       width = 8.5, height = 8.5,
+       width = 9, height = 9,
        units = "cm",
-       scaling = 0.7,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "fig9_variance ratio.eps"),
-       width = 8.5, height = 8.5,
-       dpi = 600, 
-       units = "cm",
-       device = "eps")
+       dpi = 1000)
 
 # 4. TABLE ----
 ## table 1 - otolith sampling summary (doc) ----

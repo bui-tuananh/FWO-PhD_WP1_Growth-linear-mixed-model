@@ -233,16 +233,13 @@ sf_pop <- data.frame(name = c("North Sea", "Irish Sea", "Bay of Biscay"),
 st_bbox(ices_area)
 ggplot() +
   geom_tile(data = oras5_df, aes(x = x, y = y, fill = quant)) +
-  geom_sf(data = ices_datras, fill = NA, color = "black", linewidth = 1) +
-  geom_sf(data = countries, fill = "white", color = "grey",linewidth = 0.5) + 
-  geom_sf(data = continents, fill = NA, color = "grey", linewidth = 1) + 
-  geom_sf(data = ices_area, fill = NA, color = "black", linewidth = 1, linetype = "dashed") +
-  geom_sf_text(data = sf_pop, aes(label = name)) +
+  geom_sf(data = ices_datras, fill = NA, color = "black", linewidth = 0.5) +
+  geom_sf(data = countries, fill = "white", color = "grey",linewidth = 0.25) + 
+  geom_sf(data = continents, fill = NA, color = "grey", linewidth = 0.5) + 
+  geom_sf(data = ices_area, fill = NA, color = "black", linewidth = 0.5, linetype = "dashed") +
+  geom_sf_text(data = sf_pop, aes(label = name), size = 6/.pt) +
   coord_sf(xlim = c(-9, 9.5), ylim = c(43, 62.5), expand = FALSE) +
   theme_bw() +
-  theme(legend.position = c(0.99, 0.001),
-        legend.justification = c(1, 0),
-        legend.direction="horizontal") +
   scale_fill_gradientn(
     colours = fill_colours,
     breaks = slice(legend, c(1,3,5,7,9,11))$breaks,
@@ -251,10 +248,18 @@ ggplot() +
     guide = guide_colorbar(title = "ORAS5 Temperature (°C) \n (1958-2019)", 
                            title.position = "top", #left
                            #title.vjust = 0.7,
-                           title.hjust = 0.5,
-                           barwidth = 10)) +
+                           #barwidth = 6,
+                           title.hjust = 0.5)) +
   labs(x = "Longitude",
-       y = "Latitude")
+       y = "Latitude") +
+  theme(legend.position = c(0.99, 0.001),
+        legend.justification = c(1, 0),
+        legend.direction="horizontal",
+        legend.key.height = unit(10, "pt"),
+        legend.key.width = unit(15, "pt"),
+        legend.title = element_text(size = 6),
+        legend.text = element_text(size = 5)
+        ) 
 
 p_main <- last_plot()
 
@@ -270,7 +275,10 @@ ggplot(data = data_sol, aes(x = year, y = ssb.i, color = pop.name)) +
         legend.justification = c(0, 1),
         legend.background = element_rect(fill='transparent'),
         axis.title.x = element_blank(),
-        legend.title = element_blank()) 
+        legend.title = element_blank(),
+        legend.key.height = unit(7, "pt"),
+        legend.text = element_text(size = 6)) +
+  xlim(1958, 2019)
 p_ssb <- last_plot()
 
 ## recruitment.i
@@ -279,7 +287,8 @@ ggplot(data = data_sol, aes(x = year, y = recruitment.i, color = pop.name)) +
   scale_color_brewer(palette = "Dark2", direction = -1) +
   theme(legend.position = "none",
         axis.title.x = element_blank()) +
-  labs(y = "Recruitment \n (thoudsand/km²)")
+  labs(y = "Recruitment \n (thoudsand/km²)") +
+  xlim(1958, 2019)
 p_rec <- last_plot()
 
 ## f
@@ -288,7 +297,8 @@ ggplot(data = data_sol, aes(x = year, y = f, color = pop.name)) +
   scale_color_brewer(palette = "Dark2", direction = -1) +
   theme(legend.position = "none",
         axis.title.x = element_blank()) +
-  labs(y = "Fishing mortality")
+  labs(y = "Fishing mortality") +
+  xlim(1958, 2019)
 p_f <- last_plot()
 
 ## nutrient ----
@@ -306,7 +316,8 @@ ggplot() +
         legend.background = element_rect(fill='transparent'),
         #axis.title.x = element_blank(),
         legend.title = element_blank(),
-  ) +
+        legend.key.height = unit(7, "pt"),
+        legend.text = element_text(size = 6)) +
   labs(x = "Year",
        y = "Scaled value",
        linetype = "Nutrient",
@@ -321,16 +332,23 @@ ggplot() +
 p_nu <- last_plot()
 
 ## arrange plot ----
-p_sampling <- p_main + (p_ssb / p_rec / p_f/ p_nu) + plot_annotation(tag_levels = 'A')
+p_sampling <- p_main + 
+  (p_ssb / p_rec / p_f/ p_nu) + 
+  plot_annotation(tag_levels = 'A') &
+  theme(plot.tag = element_text(size = 9),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7),
+        plot.margin = unit(c(1,1,1,1), "pt"))
+
 #p_sampling
 
 ## save plot -----
+ggsave(p_sampling, file = file.path(dir_report, "fig1_sampling site.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 12.6,
+       units = "cm")
 ggsave(p_sampling, file = file.path(dir_report, "fig1_sampling site.tiff"),
-       width = 17, height = 11.5, 
-       units = "cm",  scaling = 0.5,
-       dpi = 600)
-ggsave(p_sampling, file = file.path(dir_report, "fig1_sampling site.eps"),
-       width = 17, height = 11.5, 
+       width = 19, height = 12.6, 
        units = "cm",  
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
+

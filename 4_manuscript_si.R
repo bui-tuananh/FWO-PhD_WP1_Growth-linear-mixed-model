@@ -304,19 +304,18 @@ ggplot(data = otl_sum, aes(x = AgeAtCapture, y = n_fish)) +
   geom_bar(stat = "identity") +
   facet_wrap(~ pop.name) +
   labs(x = "Age at capture (years)",
-       y = "Number of otoliths")
+       y = "Number of otoliths") +
+  theme(axis.title = element_text(size = 9))
 
 # save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS6_age at capture distribution.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 6.3,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS6_age at capture distribution.tiff"),
-       width = 17, height = 5.75,
+       width = 19, height = 6.3,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS6_age at capture distribution.eps"),
-       width = 17, height = 5.75,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S7 - otolith sampling - sampling size ----
 ## sampling size vs SamplingYear/Cohort vs pop
@@ -331,19 +330,20 @@ ggplot(data = otl_sum, aes(x = SamplingYear, y = AgeAtCapture, size = n_fish)) +
        size = "Number of otoliths") +
   scale_size(breaks = c(10, 50, 100, 250)) +
   theme(legend.position = "bottom",
-        legend.justification = c(0.5, 0.5))
+        legend.justification = c(0.5, 0.5)) +
+  theme(axis.title = element_text(size = 9),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 9))
 
 # save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS7_sampling size.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 6.3,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS7_sampling size.tiff"),
-       width = 17, height = 5.75,
+       width = 19, height = 6.3,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS7_sampling size.eps"),
-       width = 17, height = 5.75,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S8 - otolith sampling - otolith size vs length ----
 # setup
@@ -367,7 +367,8 @@ ggplot(data = otl_sub, aes(x = width, y = fish.length)) +
   annotate("text", 
            x = 5500, y = 240, 
            label = expression("" ~ R^2 ~ " = 0.53, p < 0.001, n = 2152"), 
-           size = 3) 
+           size = 9/.pt) +
+  theme(axis.title = element_text(size = 9))
 
 # note: 
 nrow(otl_sub) #2152 
@@ -376,16 +377,14 @@ nrow(otl_sub) #2152
 # R2: 0.53
 
 # save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS8_otolith vs fish size.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 12.6,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS8_otolith vs fish size.tiff"),
-       width = 17, height = 11.5,
+       width = 19, height = 12.6,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS8_otolith vs fish size.eps"),
-       width = 17, height = 11.5,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S9 - temperature - CTD by year (Appendix S2) ----
 #### setup 
@@ -446,16 +445,14 @@ p3 <- ggplot() +
 p1 + p2 + p3
 
 # save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS9_ctd by year.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 12.6,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS9_ctd by year.tiff"),
-       width = 17, height = 11.5,
+       width = 19, height = 12.6,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS9_ctd by year.eps"),
-       width = 17, height = 11.5,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S10 - temperature - CTD vs temp (Appendix S2) ----
 #### setup
@@ -515,16 +512,14 @@ p2 <- ggplot() +
   theme(legend.position = "bottom")
 
 # save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS10_ctd vs temp.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 12.6,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS10_ctd vs temp.tiff"),
-       width = 17, height = 11.5,
+       width = 19, height = 12.6,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS10_ctd vs temp.eps"),
-       width = 17, height = 11.5,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S11 - temperature - temp ----
 #### plot
@@ -536,22 +531,20 @@ ggplot(data = data_temp %>% left_join(df_pop),
        y = "Temperature (°C)",
        color = "Population") +
   theme(legend.position = c(0.01, 0.2),
-        legend.justification = c(0, 1),
-        axis.title.x = element_blank(),
+        legend.justification = c(0, 0.8),
         legend.title = element_blank()) +
-  scale_color_brewer(palette = "Dark2", direction = -1) 
+  scale_color_brewer(palette = "Dark2", direction = -1) +
+  theme(axis.title = element_text(size = 9))
 
 #### save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS11_temperature.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 12.6,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS11_temperature.tiff"),
-       width = 17, height = 11.5,
+       width = 19, height = 12.6,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS11_temperature.eps"),
-       width = 17, height = 11.5,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S12 - temperature - c.temp ----
 #### plot
@@ -564,19 +557,20 @@ ggplot(data = data_temp %>% left_join(df_pop),
        y = expression('T'['population-anomaly'] * ' (°C)'),
        color = "Dataset") +
   theme(legend.position = "bottom") +
-  scale_color_manual(values = col_scale)
+  scale_color_manual(values = col_scale) +
+  theme(axis.title = element_text(size = 9),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 9))
 
 #### save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS12_temperature pop anomaly.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 12.6,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS12_temperature pop anomaly.tiff"),
-       width = 17, height = 11.5,
+       width = 19, height = 12.6,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS12_temperature pop anomaly.eps"),
-       width = 17, height = 11.5,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S13 - distribution area (Appendix S3) ----
 #### setup
@@ -632,19 +626,19 @@ p2 <- ggplot() +
 (p1 + p2) + 
   plot_annotation(tag_levels = 'A') +
   plot_layout(guides = "collect")  &
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom",
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 9))
 
 # save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS13_datras survey.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 12.6,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS13_datras survey.tiff"),
-       width = 17, height = 11.5,
+       width = 19, height = 12.6,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS13_datras survey.eps"),
-       width = 17, height = 11.5,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S14 - variable - spawning stock biomass, recruitment ---- 
 data_sol <- data_sol %>% left_join(df_pop)
@@ -658,7 +652,8 @@ p1 <- ggplot(data = data_sol, aes(x = year, y = ssb, color = pop.name)) +
   theme(legend.position = "none",
         legend.justification = c(0, 1),
         legend.title = element_blank()) +
-  scale_color_brewer(palette = "Dark2", direction = -1)  
+  scale_color_brewer(palette = "Dark2", direction = -1) +
+  xlim(1958, 2019)
 
 p2 <- ggplot(data = data_sol, aes(x = year, y = recruitment, color = pop.name)) +
   geom_line() +
@@ -666,25 +661,25 @@ p2 <- ggplot(data = data_sol, aes(x = year, y = recruitment, color = pop.name)) 
        y = "Recruitment (thoudsand)",
        color = "Population") +
   theme(legend.position = c(0.6, 1.05),
-        legend.justification = c(0, 1),
+        legend.justification = c(0.1, 1),
         legend.background = element_rect(fill = "transparent"),
         legend.title = element_blank()) +
-  scale_color_brewer(palette = "Dark2", direction = -1)  
+  scale_color_brewer(palette = "Dark2", direction = -1) +
+  xlim(1958, 2019)
 
 p1 + p2 + 
-  plot_annotation(tag_levels = 'A') 
+  plot_annotation(tag_levels = 'A') +
+  theme(axis.title = element_text(size = 9))
 
 #### save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS14_raw ssb rec.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 6.3,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS14_raw ssb rec.tiff"),
-       width = 17, height = 5.75,
+       width = 19, height = 6.3,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS14_raw ssb rec.eps"),
-       width = 17, height = 5.75,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S15 - variable - TN and TP ----
 #### plot
@@ -701,19 +696,18 @@ p2 <- ggplot() +
   xlim(1958, 2019)
 
 p1 + p2 + 
-  plot_annotation(tag_levels = 'A') 
+  plot_annotation(tag_levels = 'A') +
+  theme(axis.title = element_text(size = 9))
 
 #### save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS15_nutrient.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 6.3,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS15_nutrient.tiff"),
-       width = 17, height = 5.75,
+       width = 19, height = 6.3,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS15_nutrient.eps"),
-       width = 17, height = 5.75,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S16 - intrinsic - reading institute (datasource) ----
 #### setup
@@ -739,19 +733,20 @@ ggplot(data = pred) +
        color = "Reading institute",
        fill = "Reading institute",
        linetype = "Reading institute") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  theme(axis.title = element_text(size = 9),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 9))
 
 #### save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS16_age x reading institute.pdf"),
+       device = cairo_pdf,
+       width = 9, height = 7,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS16_age x reading institute.tiff"),
-       width = 8.5, height = 6.5,
+       width = 9, height = 7,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS16_age x reading institute.eps"),
-       width = 8.5, height = 6.5,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S17 - intrinsic - pop ----
 #### setup
@@ -773,19 +768,18 @@ ggplot(data = pred_pop) +
                     ymin = intercept + 1.96*se,
                     ymax = intercept - 1.96*se)) +
   labs(x = "Population",
-       y = "Population random effect")
+       y = "Population random effect") +
+  theme(axis.title = element_text(size = 9))
 
 #### save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS17_pop.pdf"),
+       device = cairo_pdf,
+       width = 9, height = 6.3,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS17_pop.tiff"),
-       width = 8.5, height = 5.75,
+       width = 9, height = 6.3,
        units = "cm",
-       scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS17_pop.eps"),
-       width = 8.5, height = 5.75,
-       units = "cm",
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S18 - comparing extrinsic effect - without nutrient (scaled model) ----
 ### extrinsic oras5 ----
@@ -985,18 +979,19 @@ p2 <- last_plot()
 ### merge and save plot ----
 p1 + p2 +
   plot_annotation(tag_levels = 'A') +
-  plot_layout(guides = "collect")
-  
+  plot_layout(guides = "collect") &
+  theme(axis.title = element_text(size = 9),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 9))
 
+ggsave(last_plot(), file = file.path(dir_report, "figS18_extrinsic comparison without nutrient.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 6.3,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS18_extrinsic comparison without nutrient.tiff"),
-       width = 17, height = 5.75,
-       units = "cm",  scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS18_extrinsic comparison without nutrient.eps"),
-       width = 17, height = 5.75,
+       width = 19, height = 6.3,
        units = "cm", 
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S19 - comparing extrinsic effect - with nutrient (scaled model) ----
 ### extrinsic oras5 ----
@@ -1238,17 +1233,19 @@ p2 <- last_plot()
 ### merge and save plot ----
 p1 + p2 +
   plot_annotation(tag_levels = 'A') + 
-  plot_layout(guides = "collect")
+  plot_layout(guides = "collect") &
+  theme(axis.title = element_text(size = 9),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 9))
 
+ggsave(last_plot(), file = file.path(dir_report, "figS19_extrinsic comparison with nutrient.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 6.3,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS19_extrinsic comparison with nutrient.tiff"),
-       width = 17, height = 5.75,
-       units = "cm",  scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS19_extrinsic comparison with nutrient.eps"),
-       width = 17, height = 5.75,
+       width = 19, height = 6.3,
        units = "cm", 
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S20 - density effect with and without standardisation ----
 #### save file
@@ -1265,18 +1262,18 @@ ggplot(data = df_all,
   facet_grid(source_name ~ term_name) +
   labs(x = "Parameter estimate",
        y = NULL) +
-  scale_x_continuous(breaks = seq(0,2.5,0.5))
+  scale_x_continuous(breaks = seq(0,2.5,0.5)) +
+  theme(axis.title = element_text(size = 9))
 
 #### save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS20_density effect vs standardisation.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 12.6,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS20_density effect vs standardisation.tiff"),
-       width = 17, height = 11.5,
-       units = "cm",  scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS20_density effect vs standardisation.eps"),
-       width = 17, height = 11.5,
+       width = 19, height = 12.6,
        units = "cm", 
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 ## fig S21 - variance individual plasticity ----
 #### setup
@@ -1325,18 +1322,22 @@ ggplot() +
   #scale_color_brewer(palette = "Paired") +
   labs(x = NULL,
        y = "Pearson correlation",
-       shape = "Increment measurement range") 
+       shape = "Increment measurement range") +
+  theme(strip.text = element_text(size = 9),
+        #axis.text = element_text(size = 7),
+        axis.title = element_text(size = 9),
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 9))
 
 #### save plot
+ggsave(last_plot(), file = file.path(dir_report, "figS21_variance individual plasticity.pdf"),
+       device = cairo_pdf,
+       width = 19, height = 12.6,
+       units = "cm")
 ggsave(last_plot(), file = file.path(dir_report, "figS21_variance individual plasticity.tiff"),
-       width = 17, height = 11.5,
-       units = "cm",  scaling = 0.8,
-       dpi = 600)
-ggsave(last_plot(), file = file.path(dir_report, "figS21_variance individual plasticity.eps"),
-       width = 17, height = 11.5,
+       width = 19, height = 12.6,
        units = "cm", 
-       dpi = 600, 
-       device = "eps")
+       dpi = 1000)
 
 # 4. TABLE ----
 ## table S1 - otolith sampling - age reading precision ----

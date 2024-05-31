@@ -222,16 +222,6 @@ data_sol <- read_rds(file.path(dir_ices, "stock-assessment_2023.rds")) %>%
          recruitment.i = recruitment/area_km2)
 
 data_sol <- data_sol %>% left_join(df_pop)
-
-# plaice stock assessment
-data_ple <- read_rds(file.path(dir_ices, "ple_stock-assessment_2023.rds")) %>%
-  rename(ssb_ple = SSB,
-         recruitment_ple = recruitment) %>%
-  select(pop, year, ssb_ple, recruitment_ple) %>%
-  left_join(datras) %>%
-  mutate(ssb_ple.i = ssb_ple/area_km2,
-         recruitment_ple.i = recruitment_ple/area_km2)
-
 ```
 
 
