@@ -270,7 +270,7 @@ data_sol <- data_sol %>% left_join(df_pop)
 ggplot(data = data_sol, aes(x = year, y = ssb.i, color = pop.name)) + 
   geom_line() +
   scale_color_brewer(palette = "Dark2", direction = -1) +
-  labs(y = "Spawning stock biomasss \n (tonne/km²)") +
+  labs(y = "Spawning stock biomass \n (tonne/km²)") +
   theme(legend.position = c(0, 0.5),
         legend.justification = c(0, 1),
         legend.background = element_rect(fill='transparent'),
