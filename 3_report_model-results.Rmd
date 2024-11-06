@@ -58,7 +58,7 @@ rsquared.glmm=function(modlist) {
     } } ) ) }
 
 # WORKING DIRECTORY 
-dir_output <- "./output"
+dir_output <- "./output_revised"
 dir_report <- "./report"
 
 # POPULATION NAME
@@ -219,9 +219,13 @@ data_sol <- read_rds(file.path(dir_ices, "stock-assessment_2023.rds")) %>%
   select(pop, year, ssb, f, recruitment) %>%
   left_join(datras) %>%
   mutate(ssb.i = ssb/area_km2,
-         recruitment.i = recruitment/area_km2)
+         recruitment.i = recruitment/area_km2) %>%
+  select(-f) #remove fbar from stock assessment (different fbar age range across populations)
 
-data_sol <- data_sol %>% left_join(df_pop)
+# add fbar from f-at-age 3-7 (consistent fbar age range across all populations)
+data_sol_fbar <- read_rds(file.path(dir_ices, "sol_fbar_age3-7_stock-assessment_2023.rds"))
+data_sol <- data_sol %>% left_join(data_sol_fbar)
+
 ```
 
 
@@ -257,45 +261,45 @@ m3_s <- read_rds(file.path(dir_output, "intrinsic.model_best_scaled.rds"))
 ## no scaled
 m4_isimip <- read_rds(file.path(dir_output, "extrinsic.model_best_isimip.rds"))
 m4_oras5 <- read_rds(file.path(dir_output, "extrinsic.model_best_oras5.rds"))
-m4_nm <- read_rds(file.path(dir_output, "extrinsic.model_best_nemo-medusa.rds"))
+#m4_nm <- read_rds(file.path(dir_output, "extrinsic.model_best_nemo-medusa.rds"))
   
 ## scaled
 m4_isimip_s <- read_rds(file.path(dir_output, "extrinsic.model_best_scaled_isimip.rds"))
 m4_oras5_s <- read_rds(file.path(dir_output, "extrinsic.model_best_scaled_oras5.rds"))
-m4_nm_s <- read_rds(file.path(dir_output, "extrinsic.model_best_scaled_nemo-medusa.rds"))
+#m4_nm_s <- read_rds(file.path(dir_output, "extrinsic.model_best_scaled_nemo-medusa.rds"))
 
 #### BEST EXTRINSIC STRUCTURE WITH NUTRIENT DATA:
 ## no scaled
 m4_nu_isimip <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_isimip.rds"))
 m4_nu_oras5 <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_oras5.rds"))
-m4_nu_nm <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_nemo-medusa.rds"))
+#m4_nu_nm <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_nemo-medusa.rds"))
   
 ## scaled
 m4_nu_isimip_s <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_scaled_isimip.rds"))
 m4_nu_oras5_s <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_scaled_oras5.rds"))
-m4_nu_nm_s <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_scaled_nemo-medusa.rds"))
+#m4_nu_nm_s <- read_rds(file.path(dir_output, "extrinsic.model.nu_best_scaled_nemo-medusa.rds"))
 
 #### BEST EXTRINSIC EXTENDED STRUCTURE: 
 ## no scaled
 m5_isimip <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_isimip.rds"))
 m5_oras5 <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_oras5.rds"))
-m5_nm <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_nemo-medusa.rds"))
+#m5_nm <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_nemo-medusa.rds"))
   
 ## scaled
 m5_isimip_s <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_scaled_isimip.rds"))
 m5_oras5_s <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_scaled_oras5.rds"))
-m5_nm_s <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_scaled_nemo-medusa.rds"))
+#m5_nm_s <- read_rds(file.path(dir_output, "extrinsic.model.ext_best_scaled_nemo-medusa.rds"))
 
 #### BEST EXTRINSIC EXTENDED STRUCTURE WITH NUTRIENT DATA: 
 ## no scaled
 m5_nu_isimip <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_isimip.rds"))
 m5_nu_oras5 <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_oras5.rds"))
-m5_nu_nm <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_nemo-medusa.rds"))
+#m5_nu_nm <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_nemo-medusa.rds"))
   
 ## scaled
 m5_nu_isimip_s <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_scaled_isimip.rds"))
 m5_nu_oras5_s <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_scaled_oras5.rds"))
-m5_nu_nm_s <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_scaled_nemo-medusa.rds"))
+#m5_nu_nm_s <- read_rds(file.path(dir_output, "extrinsic.model.ext.nu_best_scaled_nemo-medusa.rds"))
 ```
 
 # 3. MODELING RESULTS
@@ -1190,12 +1194,12 @@ reactable(pred_sum)
 # note: fit within range [-1,1] as temperatures has different range 
 
 list_model <- list("isimip" = m5_isimip,
-                   "oras5" = m5_oras5,
-                   "nemo-medusa" = m5_nm
+                   "oras5" = m5_oras5
+                   #"nemo-medusa" = m5_nm
                    )
 
 pred <- tibble()
-for (i in 1:3) {
+for (i in 1:length(list_model)) {
   model <- list_model[[i]]
   data <- model@frame
   temp_source <- names(list_model[i])
@@ -1669,12 +1673,12 @@ reactable(pred_sum)
 ### ssb.i
 ```{r}
 list_model <- list("isimip" = m5_isimip,
-                   "oras5" = m5_oras5,
-                   "nemo-medusa" = m5_nm
+                   "oras5" = m5_oras5
+                   #"nemo-medusa" = m5_nm
                    )
 # 0.02-0.46 - nemo-medusa different range ssb.i
 pred <- tibble()
-for (i in 1:3) {
+for (i in 1:length(list_model)) {
   model <- list_model[[i]]
   data <- model@frame
   temp_source <- names(list_model[i])
@@ -1728,11 +1732,11 @@ reactable(pred_sum)
 ### recruitment.i
 ```{r}
 list_model <- list("isimip" = m5_isimip,
-                   "oras5" = m5_oras5,
-                   "nemo-medusa" = m5_nm
+                   "oras5" = m5_oras5
+                   #"nemo-medusa" = m5_nm
                    )
 pred <- tibble()
-for (i in 1:3) {
+for (i in 1:length(list_model)) {
   model <- list_model[[i]]
   data <- model@frame
   temp_source <- names(list_model[i])
@@ -1787,12 +1791,12 @@ reactable(pred_sum)
 
 ### nutrient
 ```{r}
-list_model <- list("isimip" = m5_nu_isimip,
+list_model <- list(#"isimip" = m5_nu_isimip,
                    "oras5" = m5_nu_oras5
                    )
 # 
 pred <- tibble()
-for (i in 1:2) {
+for (i in 1:1) {
   model <- list_model[[i]]
   data <- model@frame
   temp_source <- names(list_model[i])
@@ -2346,7 +2350,7 @@ list_pair <- tibble(pop_pair = c("4bc/8ab", "7a/8ab", "4bc/7a"),
                                              "North Sea/Irish Sea")))
 
 var_ratio <- tibble()
-for (i in 1:3) {
+for (i in 1:2) {
   var_ratio_temp <- read_rds(file.path(dir_output, paste0("ind.plastic_var.ratio_", list_source[i], ".rds")))
   
   var_ratio_temp <- var_ratio_temp %>%

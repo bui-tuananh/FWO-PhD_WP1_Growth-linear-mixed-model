@@ -35,7 +35,8 @@ library(lubridate) # process time
 dir_otl <- "D:/OneDrive - UGent/data/WP1/otolith"
 
 # load function
-dir_function <- "D:/OneDrive - UGent/data/WP1/otolith/function"
+#dir_function <- "D:/OneDrive - UGent/data/WP1/otolith/function"
+dir_function <- "./data_processing script/1_otl_script/function"
 
 ## function to get data from SmartLab
 source(file.path(dir_function,"getdata_SmartLab.R"))
