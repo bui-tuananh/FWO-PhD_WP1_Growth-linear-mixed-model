@@ -593,8 +593,8 @@ list_pop.name <- c("North Sea", "Irish Sea", "Bay of Biscay")
 
 df <- tibble()
 for (i in 1:3) {
-  lm_oras5 <- lm(temp ~ year, data = filter(data_temp_oras5, pop == list_pop[i]))
-  lm_isimip <- lm(temp ~ year, data = filter(data_temp_isimip, pop == list_pop[i]))
+  lm_oras5 <- lm(temp ~ year, data = filter(data_temp, source == "oras5", pop == list_pop[i]))
+  lm_isimip <- lm(temp ~ year, data = filter(data_temp, source == "isimip", pop == list_pop[i]))
   
   df_oras5 <- tibble(pop = list_pop[i],
                      est = lm_oras5$coefficients["year"],
