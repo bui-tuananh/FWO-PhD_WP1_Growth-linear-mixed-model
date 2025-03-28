@@ -32,7 +32,7 @@ library(readxl)    # read xlxs
 library(lubridate) # process time
 
 # dir otl
-dir_otl <- "D:/OneDrive - UGent/data/WP1/otolith"
+dir_otl <- "./data/otolith"
 
 # load function
 #dir_function <- "D:/OneDrive - UGent/data/WP1/otolith/function"
@@ -99,7 +99,7 @@ otl_ilvo <- SmartDots_to_OtolithIncrement(otl_ilvo)
 # 2) Sample_CatchDate has NA values due to NA HAU.HaulTime so use TRI.DepartureDate as sampling date SAM.Date
 # 3) SAM.Date is used at Year and Month level so uncertainty in day is acceptable
 
-metadata_otl_ilvo <- read_rds(file.path("D:/OneDrive - UGent/data/WP1/otolith/@processed","sol_select_full.rds"))
+metadata_otl_ilvo <- read_rds(file.path(dir_otl,"sol_select_full.rds"))
 metadata_otl_ilvo <- metadata_otl_ilvo %>% filter(UniqueID %in% otl_ilvo$Sample_NumberExternal) 
 
 # change date - NA SAM.Date use TRI.Departure date

@@ -24,7 +24,7 @@ str(ifremer_raw)
 names(ifremer_raw)
 
 # reference dataset
-otl <- read_rds(file.path("D:/OneDrive - UGent/data/WP1/otolith/otl_full for analysis.rds"))
+otl <- read_rds(file.path("D:/OneDrive - UGent/data/WP1/otolith/@processed/sol_select_full.rds"))
 names(otl)
 
 # certain fields that need to be asked

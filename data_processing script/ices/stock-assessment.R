@@ -30,7 +30,7 @@ stock_8ab <- getSummaryTable(assessmentKey = 18024)[[1]] %>%
 stock_all <- rbind(stock_4, stock_7a, stock_8ab)
 
 # save data
-write_rds(stock_all, file.path("./ICES/stock assessment 2023", "stock-assessment_2023.rds"))
+write_rds(stock_all, file.path("./data/ices", "stock-assessment_2023.rds"))
 
 # process abundance at age data ----
 dir_ices_stock <- "./ICES/stock assessment 2023"

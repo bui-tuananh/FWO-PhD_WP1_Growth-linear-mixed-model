@@ -7,18 +7,18 @@ library(tmap)
 
 ## ICES statistical rectangles and division ----
 ## stat_rec
-dir_stat_rec <- "./ICES/ICES_statistical-rectangle"
+dir_stat_rec <- "./data/ices/ICES_statistical-rectangle"
 ices_rec <- read_sf(file.path(dir_stat_rec, "ICES_Statistical_Rectangles_Eco.shp"))
 
 ## ices_div 
 # note: area is the whole 4abc, but keep naming 4bc to be consistent with other processed data
-dir_admin <- "./Admin"
+dir_admin <- "./data/admin"
 ices_div <- read_sf(file.path(dir_admin, "ices_areas_sub_group_4abc_4326_new.gpkg")) #ices_areas_sub_group_4abc_4326_new.gpkg #ices_areas_sub_group_4326_new.gpkg
 ices_div <- ices_div %>% 
   filter(Area_27 %in% c("4abc", "7a", "8ab"))
 
 ## DATRAS data ----
-dir_datras <- "./ICES/DATRAS"
+dir_datras <- "./data/ices"
 hh <- read_rds(file.path(dir_datras, "sf_HHflats_1985till2022_in3a204a4b4c7a7d7e7f7g7h7j28a8b.RDS"))
 hl <- read_rds(file.path(dir_datras, "sf_Solea_soleaHL_withAbs_BTS+BTS-VIII+DYFS+SNS_in1985till2021_in3a204a4b4c7a7d7e7f7g7h7j28a8b.RDS"))
 

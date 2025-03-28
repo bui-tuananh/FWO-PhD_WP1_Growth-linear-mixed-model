@@ -53,7 +53,7 @@ tmap_mode("view") #set tmap view
 # v : in Van Leeuwen et al 2023 dataset
 
 ## get the location of all rivers ----
-riverdataList <- list.files(path = "./Env/Eutrophication_OSPAR ICG-EMO/CurrentState1/",
+riverdataList <- list.files(path = "./data/nutrient/Eutrophication_OSPAR ICG-EMO/CurrentState1/",
                             recursive = TRUE,
                             pattern = "\\_1940_2022.dat$",
                             full.names = TRUE)
@@ -84,13 +84,13 @@ river_data_map$reg_river <- NULL
 
 # keep only region, river, lat, long, and geometry
 river_data_map <- river_data_map %>% select(Region:lat)
-write_sf(river_data_map, file.path("./Env/Eutrophication_OSPAR ICG-EMO", "ospar_map.gpkg"))
+write_sf(river_data_map, file.path("./data/nutrient/Eutrophication_OSPAR ICG-EMO", "ospar_map.gpkg"))
 
 # plot map
-dir_gis <- "D:/OneDrive - UGent/data/Admin"
+dir_gis <- "./data/admin"
 ices_div <- read_sf(file.path(dir_gis, "ices_areas_sub_group_4326_new.gpkg"))
 
-river_data_map <- read_sf(file.path("./Env/Eutrophication_OSPAR ICG-EMO", "ospar_map.gpkg"))
+river_data_map <- read_sf(file.path("./data/nutrient/Eutrophication_OSPAR ICG-EMO", "ospar_map.gpkg"))
 
 ggplot() +
   geom_sf(data = ices_div) +
@@ -150,17 +150,17 @@ river_data$Fe <- as.numeric(river_data$Fe)
 river_data$POC <- as.numeric(river_data$POC)
 river_data$TOC <- as.numeric(river_data$TOC)
 
-write_rds(river_data, file.path("./Env/Eutrophication_OSPAR ICG-EMO", "ospar_subset_1940-2022.rds"))
+write_rds(river_data, file.path("./data/nutrient/Eutrophication_OSPAR ICG-EMO", "ospar_subset_1940-2022.rds"))
 
 ## get data in studied areas - 4bc, 7a, 8ab ----
 #### data
 ## ospar
-ospar <- as.data.frame(read_rds(file.path("./Env/Eutrophication_OSPAR ICG-EMO", "ospar_subset_1940-2022.rds")))
+ospar <- as.data.frame(read_rds(file.path("./data/nutrient/Eutrophication_OSPAR ICG-EMO", "ospar_subset_1940-2022.rds")))
 
 ## ospar_map and ices_div
-ospar_map <- read_sf(file.path("./Env/Eutrophication_OSPAR ICG-EMO", "ospar_map.gpkg"))
+ospar_map <- read_sf(file.path("./data/nutrient/Eutrophication_OSPAR ICG-EMO", "ospar_map.gpkg"))
 
-dir_gis <- "./Admin"
+dir_gis <- "./data/admin"
 ices_div <- read_sf(file.path(dir_gis, "ices_area_sub_4abc_4326.gpkg"))
 
 tm_shape(ices_div) +
@@ -206,10 +206,10 @@ tm_shape(ospar_map_buffer_ices) +
   tm_borders()
 
 ## save ospar_map_buffer_ices
-st_write(ospar_map_buffer_ices, file.path("./Env/Eutrophication_OSPAR ICG-EMO", "ospar_map_buffer5km_ices.gpkg"))
+st_write(ospar_map_buffer_ices, file.path("./data/nutrient/Eutrophication_OSPAR ICG-EMO", "ospar_map_buffer5km_ices.gpkg"))
 
 ### extract ospar data in studied area ----
-ospar_map_buffer_ices <- read_sf(file.path("./Env/Eutrophication_OSPAR ICG-EMO", "ospar_map_buffer5km_ices.gpkg"))
+ospar_map_buffer_ices <- read_sf(file.path("./data/nutrient/Eutrophication_OSPAR ICG-EMO", "ospar_map_buffer5km_ices.gpkg"))
 
 ospar_map_buffer_ices_sub <- as.data.frame(ospar_map_buffer_ices) %>%  
   mutate(IcesArea = Area_27) %>%
@@ -220,10 +220,10 @@ ospar_ices <- ospar %>%
   left_join(ospar_map_buffer_ices_sub)
 
 ## save ospar_ices
-write_rds(ospar_ices, file.path("./Env/Eutrophication_OSPAR ICG-EMO", "ospar_subset_1940-2022_ices.rds"))
+write_rds(ospar_ices, file.path("./data/nutrient/Eutrophication_OSPAR ICG-EMO", "ospar_subset_1940-2022_ices.rds"))
 
 ### summarize ospar data by ices_area and by year ----
-ospar_ices <- read_rds(file.path("./Env/Eutrophication_OSPAR ICG-EMO", "ospar_subset_1940-2022_ices.rds"))
+ospar_ices <- read_rds(file.path("./data/nutrient/Eutrophication_OSPAR ICG-EMO", "ospar_subset_1940-2022_ices.rds"))
 
 #### overview of river contribution ----
 ospar_ices_river <- ospar_ices %>% 
@@ -257,7 +257,7 @@ river_cont <- river_cont %>%
 
 
 ## save file
-write_rds(river_cont, file.path("./Env/Eutrophication_OSPAR ICG-EMO", "ospar_subset_1940-2022_ices_river-contribution.rds"))
+write_rds(river_cont, file.path("./data/nutrient/Eutrophication_OSPAR ICG-EMO", "ospar_subset_1940-2022_ices_river-contribution.rds"))
 
 #### check issue of climatology data of major rivers in each IcesArea -----
 # major rivers: account more than 80% of total TN and TP in each IcesArea
@@ -397,7 +397,7 @@ ospar_ices_year <- ospar_ices %>%
             TP = sum(TP, na.rm = T)) 
 
 ## save file
-write_rds(ospar_ices_year, file.path("./Env/Eutrophication_OSPAR ICG-EMO", "ospar_subset_1940-2022_ices_year.rds"))
+write_rds(ospar_ices_year, file.path("./data/nutrient/Eutrophication_OSPAR ICG-EMO", "ospar_subset_1940-2022_ices_year.rds"))
 
 ## TN
 ggplot(data = ospar_ices_year %>% filter(IcesArea %in% c("4bc")), 
