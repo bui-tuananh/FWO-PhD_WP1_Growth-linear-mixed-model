@@ -1,3 +1,6 @@
+Raw data are stored in local drive due to heavy size
+Raw data can be downloaded from sources as below
+
 ISIMIP
 See Sea Water Potential Temperature at Sea Floor in protocol 3b https://protocol.isimip.org/, code (MPI-ESM1-2-HR)
 
@@ -13,3 +16,8 @@ oras5 here is data/ORAS5_Temp/ORAS5_bottomT_raster_1958_2022.tif
 NEMO-MEDUSA
 source: SEA-WISE project
 NemoMedusa_process_datapoints processes the data in folder Sea floor and return NemoMedusa_ices.rds
+
+ICES CTD
+data source: ICES Oceanography
+link: https://www.ices.dk/data/data-portals/Pages/ocean.aspx
+dataset name: High Resolution CTD Data (1970-2021)
